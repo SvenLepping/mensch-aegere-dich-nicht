@@ -1,0 +1,23 @@
+body{
+    margin: 50px;
+
+}
+
+#spielbrett {
+    width: fit-content;
+    border: 3px solid black;
+}
+
+.zeile {
+    display: flex;
+}
+
+.feld{
+    height: 40px;
+    width: 40px;
+    border: 1px solid black;
+}
+
+.laufbahn {
+    background-color: bisque;
+}
