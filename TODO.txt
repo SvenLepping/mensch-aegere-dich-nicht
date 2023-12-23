@@ -1,0 +1,3 @@
+- zielfelder
+- Würfel erstellen // mit Spielerwechsel
+- aktueller Spieler
