@@ -1,0 +1,57 @@
+
+brettkoordinate zur laufbahnindex
+
+spalte 4:
+    zeile [7-10] === 10 - zeile
+
+zeile 6:
+    spalte [0-4] === 4 + (4-spalte)
+
+spalte === 0 && zeile === 5:
+    index = 12
+
+zeile 4:
+    spalte [0-4] === 13 + spalte
+
+spalte 4:
+    zeile [4-0] === 18 + (3 - zeile)
+
+spalte === 5 && zeile === 0:
+    index = 22
+
+spalte 6:
+    zeile [0-3] === 23 + zeile
+
+zeile 4:
+    spalte [6-10] === 27 + (spalte -6)
+
+spalte === 10 && zeile === 5:
+    index = 32
+
+zeile 6:
+    spalte [10-6] === 33 + (10 - spalte)
+
+spalte 6:
+    zeile [7-10] === 38 + (zeile-7)
+
+spalte === 5 && zeile === 10:
+    index = 43
+
+
+---------------------------------------
+
+9 / 0:
+    return 0
+
+9 / 1:
+    return 1
+
+10 / 0:
+    return 2
+
+10 / 1:
+    return 3
+
+
+spalte + 2*(zeile - 9)
+

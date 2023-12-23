@@ -16,8 +16,51 @@ body{
     height: 40px;
     width: 40px;
     border: 1px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .laufbahn {
     background-color: bisque;
+}
+
+.basis-rot{
+    background-color: #ff000069;
+}
+
+.basis-blau{
+    background-color: #0022ff69;
+}
+
+.basis-gelb{
+    background-color: rgba(255, 255, 0, 0.448);
+}
+
+.basis-grün{
+    background-color: rgba(0, 128, 0, 0.466);
+}
+
+/*gilt für alle Spielfiguren */
+.spiel-figur{
+    width: calc(90% - 2px);
+    height: calc(90% - 2px);
+    border-radius: 50%;
+    border: 1px solid black;
+}
+
+.spiel-figur-rot {
+    background-color: red;
+}
+
+.spiel-figur-blau {
+    background-color: blue;
+}
+
+.spiel-figur-gelb {
+    background-color: yellow;
+}
+
+.spiel-figur-grün {
+    background-color: green;
 }
