@@ -3,20 +3,20 @@ const FeldGroesse = 11;
 //SpielerListe erstellen mit 4 Spielern
 const spielerListe = [{
     id: 0,
-    heimfeld: [true, true, true, true],
-    zielfeld: [false, false, false, false]
+    heimfeld: [false, false, false, false],
+    zielfeld: [true, true, true, true]
 }, {
     id: 1,
-    heimfeld: [true, true, true, true],
-    zielfeld: [false, false, false, false]
+    heimfeld: [false, true, true, true],
+    zielfeld: [true, false, false, false]
 }, {
     id: 2,
-    heimfeld: [true, true, true, true],
-    zielfeld: [false, false, false, false]
+    heimfeld: [false, true, true, true],
+    zielfeld: [true, false, false, false]
 }, {
     id: 3,
-    heimfeld: [true, true, true, true],
-    zielfeld: [false, false, false, false]
+    heimfeld: [false, true, true, true],
+    zielfeld: [true, false, false, false]
 }]
 
 // Array der Größe 52 wird erstellt und mit null initialisiert
@@ -59,6 +59,22 @@ function render() {
 
                     feld$.appendChild(spielfigur$);
                 }
+            }
+
+            const zielFeld = hohleZielFeldIndex(zeile, spalte);
+            //Zielfelder werden gefärbt
+            if (zielFeld != null) {
+                const spielerFarbe = gibSpielerFarbe(zielFeld.spielerId);
+                feld$.className += ` basis-${spielerFarbe}`;
+
+                const zielFeldSpieler = spielerListe[zielFeld.spielerId];
+                if (zielFeldSpieler.zielfeld[zielFeld.zielFeldIndex]) {
+                    const spielfigur$ = document.createElement('div');
+                    spielfigur$.className = `spiel-figur spiel-figur-${spielerFarbe}`;
+
+                    feld$.appendChild(spielfigur$);
+                }
+
             }
 
         }
@@ -144,6 +160,43 @@ function hohleHeimFeldIndex(zeile, spalte) {
             spielerId: 3,
             //
             heimFeldIndex: (spalte - 9) + (2 * (zeile - 9))
+        }
+    }
+
+    return null;
+}
+
+function hohleZielFeldIndex(zeile, spalte) {
+    //Spieler 1 Rot
+    if (spalte === 5 && (zeile <= 9 && zeile >= 6)) {
+        return {
+            spielerId: 0,
+            //
+            zielFeldIndex: 9 - zeile
+        }
+    }
+    //Spieler 2 Blau
+    if (zeile === 5 && (spalte >= 1 && spalte <= 4)) {
+        return {
+            spielerId: 1,
+            //
+            zielFeldIndex: spalte - 1
+        }
+    }
+    //Spieler 3 Gelb
+    if (spalte === 5 && (zeile >= 1 && zeile <= 4)) {
+        return {
+            spielerId: 2,
+            //
+            zielFeldIndex: zeile - 1
+        }
+    }
+    //Spieler 4 Grün
+    if (zeile === 5 && (spalte >= 6 && spalte <= 9)) {
+        return {
+            spielerId: 3,
+            //
+            zielFeldIndex: 9 - spalte
         }
     }
 
