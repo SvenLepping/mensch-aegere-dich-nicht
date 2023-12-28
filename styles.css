@@ -3,9 +3,41 @@ body{
 
 }
 
+h1 {
+    font-family: 'Helvetica', sans-serif;
+    font-size: 36px;
+    font-weight: bold;
+    color: #333;
+    padding: 10px;
+    margin: 0;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    text-decoration: underline;
+    text-align: center;
+}
+
+
 #spielbrett {
     width: fit-content;
     border: 3px solid black;
+}
+
+#wuerfel {
+    /*display: inline-block;*/
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    cursor: pointer;
+    background-color: #3498db; /* Hintergrundfarbe */
+    color: #fff; /* Textfarbe */
+    border: 2px solid #2980b9; /* Randfarbe */
+    /*border-radius: 5px; /* Abrundung der Ecken */ 
+    transition: background-color 0.3s, color 0.3s; /* Sanfte Übergänge für Hintergrund- und Textfarbe */
+}
+
+#wuerfel:hover {
+    background-color: #000000; /* Hintergrundfarbe bei Hover */
+    color: #ffffff; /* Textfarbe bei Hover */
 }
 
 .zeile {
@@ -13,8 +45,8 @@ body{
 }
 
 .feld{
-    height: 40px;
-    width: 40px;
+    height: 55px;
+    width: 55px;
     border: 1px solid black;
     display: flex;
     justify-content: center;

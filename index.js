@@ -22,11 +22,22 @@ const spielerListe = [{
 // Array der Größe 52 wird erstellt und mit null initialisiert
 const laufbahn = new Array(FeldGroesse * 4, null);
 
-
 //Funktion um Spielfeld zu zeichnen
 function render() {
     // Sucht im HTML die das Spielbrett Element anhand der ID
     const spielbrett$ = document.querySelector('#spielbrett');
+
+    //Würfel wird zum Spielbrett hinzugefügt und css id wird gesetzt 
+    const wurfel$ = document.createElement('div');
+    wurfel$.id = 'wuerfel';
+    wurfel$.textContent = 'Jetzt Würfeln';
+    spielbrett$.appendChild(wurfel$);
+
+    //Würfel bekommt klick funktion
+    wurfel$.addEventListener('click', function () {
+        const wurfErgebnis = wurfeln();
+        alert(`Du hast eine ${wurfErgebnis} gewürfelt!`)
+    })
 
     for (let zeile = 0; zeile < FeldGroesse; zeile++) {
         const zeile$ = document.createElement('div');
@@ -79,8 +90,6 @@ function render() {
 
         }
     }
-
-
 }
 
 // aus einer Koordinate vom Spielbrett wird der Laufbahnindex zurückgegeben
@@ -219,6 +228,10 @@ function gibSpielerFarbe(id) {
         default:
             throw new Error('falscher Spieler');
     }
+}
+// schmeißt den Würfel und gibt ein Zahl von 1-6 aus
+function wurfeln() {
+    return Math.floor(Math.random() * 6) + 1; // Würfelt eine Zahl zwischen 1 und 6
 }
 
 // Wenn Seite lädtd dann Spielfeld zeichnen
