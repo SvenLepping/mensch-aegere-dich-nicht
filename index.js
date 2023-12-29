@@ -3,7 +3,7 @@ const FeldGroesse = 11;
 //SpielerListe erstellen mit 4 Spielern
 const spielerListe = [{
     id: 0,
-    heimfeld: [true, false, false, false],
+    heimfeld: [true, true, true, true],
     zielfeld: [false, false, false, false]
 }, {
     id: 1,
@@ -194,6 +194,7 @@ function hohleZielFeldIndex(zeile, spalte) {
     if (spalte === 5 && (zeile <= 9 && zeile >= 6)) {
         return {
             spielerId: 0,
+            startFeldIndex: 0,
             //
             zielFeldIndex: 9 - zeile
         }
@@ -202,6 +203,7 @@ function hohleZielFeldIndex(zeile, spalte) {
     if (zeile === 5 && (spalte >= 1 && spalte <= 4)) {
         return {
             spielerId: 1,
+            startFeldIndex: 10,
             //
             zielFeldIndex: spalte - 1
         }
@@ -210,6 +212,7 @@ function hohleZielFeldIndex(zeile, spalte) {
     if (spalte === 5 && (zeile >= 1 && zeile <= 4)) {
         return {
             spielerId: 2,
+            startFeldIndex: 20,
             //
             zielFeldIndex: zeile - 1
         }
@@ -218,6 +221,7 @@ function hohleZielFeldIndex(zeile, spalte) {
     if (zeile === 5 && (spalte >= 6 && spalte <= 9)) {
         return {
             spielerId: 3,
+            startFeldIndex: 30,
             //
             zielFeldIndex: 9 - spalte
         }
@@ -248,7 +252,7 @@ function wurfeln() {
     return Math.floor(Math.random() * 6) + 1; // Würfelt eine Zahl zwischen 1 und 6
 }
 
-// Wenn Seite lädtd dann Spielfeld zeichnen
+// Wenn Seite lädt dann Spielfeld zeichnen
 window.onload = function () {
     render();
 
