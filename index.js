@@ -30,7 +30,7 @@ function render() {
     //Würfel wird zum Spielbrett hinzugefügt und css id wird gesetzt 
     const wurfel$ = document.createElement('div');
     wurfel$.id = 'wuerfel';
-    wurfel$.textContent = 'Jetzt Würfeln';
+    wurfel$.textContent = 'Jetzt würfeln';
     spielbrett$.appendChild(wurfel$);
 
     //Würfel bekommt klick funktion
@@ -54,6 +54,20 @@ function render() {
             // Laufbahn wird gefärbt 
             if (laufbahnIndex != null) {
                 feld$.className += ' laufbahn';
+
+                if (laufbahnIndex === 0) {
+                    feld$.className += ' basis-rot';
+                }
+                if (laufbahnIndex === 10) {
+                    feld$.className += ' basis-blau';
+                }
+                if (laufbahnIndex === 20) {
+                    feld$.className += ' basis-gelb';
+                }
+                if (laufbahnIndex === 30) {
+                    feld$.className += ' basis-grün';
+                }
+
                 continue;
             }
 
@@ -102,34 +116,34 @@ function holeLaufbahnIndex(zeile, spalte) {
         return 4 + (4 - spalte);
     }
     if (spalte === 0 && zeile === 5) {
-        return 12;
+        return 9;
     }
     if (zeile === 4 && (spalte >= 0 && spalte <= 4)) {
-        return 13 + spalte;
+        return 10 + spalte;
     }
     if (spalte === 4 && (zeile >= 0 && zeile <= 4)) {
-        return 18 + (3 - zeile);
+        return 15 + (3 - zeile); 
     }
     if (spalte === 5 && zeile === 0) {
-        return 22;
+        return 19;
     }
     if (spalte === 6 && (zeile >= 0 && zeile <= 3)) {
-        return 23 + zeile;
+        return 20 + zeile;
     }
     if (zeile === 4 && (spalte >= 6 && spalte <= 10)) {
-        return 27 + (spalte - 6);
+        return 24 + (spalte - 6);
     }
     if (spalte === 10 && zeile === 5) {
-        return 32;
+        return 29//;
     }
     if (zeile === 6 && (spalte <= 10 && spalte >= 6)) {
-        return 33 + (10 - spalte);
+        return 30 + (10 - spalte);
     }
     if (spalte === 6 && (zeile >= 7 && zeile <= 10)) {
-        return 38 + (zeile - 7);
+        return 35 + (zeile - 7);
     }
     if (spalte === 5 && zeile === 10) {
-        return 43;
+        return 39;
     }
 
     return null;
