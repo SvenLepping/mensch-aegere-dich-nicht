@@ -1,2 +1,11 @@
 - Würfel erstellen // mit Spielerwechsel
 - aktueller Spieler
+
+
+Fragen:
+- Spielfeld wissen ob es besetzt ist? objekt?
+- generell wo muss die Logik rein? würfel on click funktio??
+- Spielfiguren durchnummerieren
+- reihenfolge Zielfelder? reihenfolge 
+- Zuglogik
+- können wir die funktionen so nutzen?

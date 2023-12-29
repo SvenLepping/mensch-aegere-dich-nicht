@@ -1,10 +1,14 @@
 const FeldGroesse = 11;
+var aktuellerSpieler = 0;
+var wurfzaehler = 0;
+var wurfErgebnis;
+var gewuerfelt = false;
 
 //SpielerListe erstellen mit 4 Spielern
 const spielerListe = [{
     id: 0,
     heimfeld: [true, true, true, true],
-    zielfeld: [false, false, false, false]
+    zielfeld: [true, true, true, true]
 }, {
     id: 1,
     heimfeld: [false, true, true, true],
@@ -12,12 +16,12 @@ const spielerListe = [{
 }, {
     id: 2,
     heimfeld: [false, true, true, true],
-    zielfeld: [true, false, false, false]
+    zielfeld: [true, true, true, true]
 }, {
     id: 3,
     heimfeld: [false, true, true, true],
     zielfeld: [true, false, false, false]
-}]
+}] 
 
 // Array der Größe 52 wird erstellt und mit null initialisiert
 const laufbahn = new Array(FeldGroesse * 4, null);
@@ -35,7 +39,7 @@ function render() {
 
     //Würfel bekommt klick funktion
     wurfel$.addEventListener('click', function () {
-        const wurfErgebnis = wurfeln();
+        wurfErgebnis = wurfeln();
         alert(`Du hast eine ${wurfErgebnis} gewürfelt!`)
     })
 
@@ -70,7 +74,7 @@ function render() {
 
                 continue;
             }
-
+                
             const heimFeld = hohleHeimFeldIndex(zeile, spalte);
             //Heimfelder werden gefärbt
             if (heimFeld != null) {
@@ -104,6 +108,7 @@ function render() {
 
         }
     }
+    prüfeFertig();
 }
 
 // aus einer Koordinate vom Spielbrett wird der Laufbahnindex zurückgegeben
@@ -252,9 +257,69 @@ function wurfeln() {
     return Math.floor(Math.random() * 6) + 1; // Würfelt eine Zahl zwischen 1 und 6
 }
 
+//wechselt den aktuellen Spieler
+function wechsleSpieler() {
+    gewuerfelt = false;
+    wurfzaehler = 0;
+
+    aktuellerSpieler = (aktuellerSpieler + 1) % 4;
+
+    return aktuellerSpieler;
+}
+
+function setzeSpieler(figur) {
+    if (gewuerfelt === true) {
+        const spieler = spielerListe[figur.spielerId];
+
+        // Überprüfen, ob die Figur im Heimfeld oder auf der Laufbahn ist
+        if (figur.heimFeldIndex !== undefined) {
+            // Figur ist im Heimfeld
+            if (wurfErgebnis === 6) {
+                // Wenn eine 6 gewürfelt wurde, darf die Figur auf die Laufbahn gesetzt werden
+                figur.heimFeldIndex = undefined; // Figur ist nicht mehr im Heimfeld
+                figur.laufbahnIndex = starteLaufbahnIndex(spieler.id); // Setzen Sie den Startindex für die Laufbahn
+            }
+        } else if (figur.laufbahnIndex !== undefined) {
+            // Figur ist auf der Laufbahn
+            const neuerLaufbahnIndex = figur.laufbahnIndex + wurfErgebnis;
+            // Überprüfen, ob die Figur das Zielfeld erreicht hat
+            if (neuerLaufbahnIndex >= FeldGroesse * 4) {
+                figur.zielFeldIndex = figur.zielFeldIndex + 1; // Bewegen Sie die Figur im Zielfeld weiter
+                figur.laufbahnIndex = undefined; // Figur ist nicht mehr auf der Laufbahn
+            } else {
+                // Setzen Sie den neuen Laufbahnindex für die Figur
+                figur.laufbahnIndex = neuerLaufbahnIndex;
+            }
+        }
+
+        // Wechseln Sie den Spieler nach dem Zug
+        wechsleSpieler();
+    }
+}
+
+
+function rauswerfen() {
+    
+}
+
+function prüfeFertig() {
+    for (const spieler of spielerListe) {
+        // Überprüfen, ob alle Spielfiguren im Zielfeld sind
+        if (spieler.zielfeld.every(feld => feld)) {
+            console.log(`Spieler ${spieler.id} ist fertig!`);
+
+            // Hier können Sie weitere Aktionen für einen fertigen Spieler hinzufügen
+        }
+    }
+}
+
+// Funktion, um die Position einer Spielfigur zu setzen
+function setzeSpielfigurPosition(spielerId, feldTyp, feldIndex, position) {
+    spielerListe[spielerId][feldTyp][feldIndex].position = position;
+}
+
 // Wenn Seite lädt dann Spielfeld zeichnen
 window.onload = function () {
     render();
-
 }
 
