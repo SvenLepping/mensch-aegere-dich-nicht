@@ -3,8 +3,8 @@ const FeldGroesse = 11;
 //SpielerListe erstellen mit 4 Spielern
 const spielerListe = [{
     id: 0,
-    heimfeld: [false, false, false, false],
-    zielfeld: [true, true, true, true]
+    heimfeld: [true, false, false, false],
+    zielfeld: [false, false, false, false]
 }, {
     id: 1,
     heimfeld: [false, true, true, true],
