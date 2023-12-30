@@ -1,5 +1,5 @@
 const FeldGroesse = 11;
-let aktuellerSpieler = 0;
+let aktuellerSpielerID = 0;
 let wurfzaehler = 0;
 
 //SpielerListe erstellen mit 4 Spielern
@@ -82,7 +82,7 @@ function renderSpielbrett() {
                 continue;
             }
 
-            const heimFeld = hohleHeimFeldIndex(zeile, spalte);
+            const heimFeld = holeHeimFeldIndex(zeile, spalte);
             //Heimfelder werden gefärbt
             if (heimFeld != null) {
                 const spielerFarbe = gibSpielerFarbe(heimFeld.spielerId);
@@ -116,7 +116,6 @@ function renderSpielbrett() {
 
         }
     }
-    prüfeFertig();
     return spielbrett$;
 }
 
@@ -163,7 +162,7 @@ function holeLaufbahnIndex(zeile, spalte) {
     return null;
 }
 
-function hohleHeimFeldIndex(zeile, spalte) {
+function holeHeimFeldIndex(zeile, spalte) {
     //Spieler 1 Rot
     if (zeile >= 9 && zeile <= 10 && spalte <= 1) {
         return {
@@ -255,10 +254,17 @@ function gibSpielerFarbe(id) {
 }
 
 function spielzugAusfuehren() {
-    const wurfErgebnis = wuerfeln();
-    window.alert(`Spieler ${aktuellerSpieler} hat eine ${wurfErgebnis} gewürfelt`);
+    const aktiverSpieler =spielerListe[aktuellerSpielerID];
 
+    const wurfErgebnis = wuerfeln();
+    window.alert(`Spieler ${aktuellerSpielerID} hat eine ${wurfErgebnis} gewürfelt`);
+    if(prüfeFertig()){
+        window.alert(`Spieler ${aktuellerSpielerID} hat gewonnen!`);
+    }
+    else{
     wechsleSpieler();
+    }
+
 }
 
 
@@ -271,7 +277,7 @@ function wuerfeln() {
 //wechselt den aktuellen Spieler
 function wechsleSpieler() {
     wurfzaehler = 0;
-    aktuellerSpieler = (aktuellerSpieler + 1) % 4;
+    aktuellerSpielerID = (aktuellerSpielerID + 1) % 4;
 }
 
 function rauswerfen() {
@@ -281,12 +287,11 @@ function rauswerfen() {
 function prüfeFertig() {
     for (const spieler of spielerListe) {
         // Überprüfen, ob alle Spielfiguren im Zielfeld sind
-        if (spieler.zielfeld.every(feld => feld)) {
-            console.log(`Spieler ${spieler.id} ist fertig!`);
-
-            // Hier können Sie weitere Aktionen für einen fertigen Spieler hinzufügen
+        if (spieler.spielFiguren.every(figur => figur>=40)) {
+        return true;
         }
     }
+    return false;
 }
 
 // Funktion, um die Position einer Spielfigur zu setzen
