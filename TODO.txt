@@ -1,11 +1,7 @@
-- Würfel erstellen // mit Spielerwechsel
-- aktueller Spieler
+-alle Figuren Heimfeld prüfen
+-Zielfelder prüfen/ansteuern
+-Spielfiguren schlagen
+-Zielfelder nicht doppelt besetzen
+-verschiedenen Figuren ziehen
 
 
-Fragen:
-- Spielfeld wissen ob es besetzt ist? objekt?
-- generell wo muss die Logik rein? würfel on click funktio??
-- Spielfiguren durchnummerieren
-- reihenfolge Zielfelder? reihenfolge 
-- Zuglogik
-- können wir die funktionen so nutzen?
