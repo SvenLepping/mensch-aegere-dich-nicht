@@ -1,47 +1,45 @@
 const FeldGroesse = 11;
-var aktuellerSpieler = 0;
-var wurfzaehler = 0;
-var wurfErgebnis;
-var gewuerfelt = false;
+let aktuellerSpieler = 0;
+let wurfzaehler = 0;
 
 //SpielerListe erstellen mit 4 Spielern
 const spielerListe = [{
     id: 0,
     heimfeld: [true, true, true, true],
-    zielfeld: [true, true, true, true]
+    zielfeld: [false, false, false, false]
 }, {
     id: 1,
-    heimfeld: [false, true, true, true],
-    zielfeld: [true, false, false, false]
+    heimfeld: [true, true, true, true],
+    zielfeld: [false, false, false, false]
 }, {
     id: 2,
-    heimfeld: [false, true, true, true],
-    zielfeld: [true, true, true, true]
+    heimfeld: [true, true, true, true],
+    zielfeld: [false, false, false, false]
 }, {
     id: 3,
-    heimfeld: [false, true, true, true],
-    zielfeld: [true, false, false, false]
-}] 
+    heimfeld: [true, true, true, true],
+    zielfeld: [false, false, false, false]
+}]
 
 // Array der Größe 52 wird erstellt und mit null initialisiert
 const laufbahn = new Array(FeldGroesse * 4, null);
 
-//Funktion um Spielfeld zu zeichnen
-function render() {
-    // Sucht im HTML die das Spielbrett Element anhand der ID
-    const spielbrett$ = document.querySelector('#spielbrett');
-
+function renderWuerfel(spielbrett$) {
     //Würfel wird zum Spielbrett hinzugefügt und css id wird gesetzt 
+    
     const wurfel$ = document.createElement('div');
     wurfel$.id = 'wuerfel';
     wurfel$.textContent = 'Jetzt würfeln';
     spielbrett$.appendChild(wurfel$);
 
-    //Würfel bekommt klick funktion
-    wurfel$.addEventListener('click', function () {
-        wurfErgebnis = wurfeln();
-        alert(`Du hast eine ${wurfErgebnis} gewürfelt!`)
-    })
+    //Würfel bekommt klick Funktion
+    wurfel$.addEventListener('click', spielzugAusfuehren);
+}
+
+//Funktion um Spielfeld zu zeichnen
+function renderSpielbrett() {
+    // Sucht im HTML die das Spielbrett Element anhand der ID
+    const spielbrett$ = document.querySelector('#spielbrett');
 
     for (let zeile = 0; zeile < FeldGroesse; zeile++) {
         const zeile$ = document.createElement('div');
@@ -74,7 +72,7 @@ function render() {
 
                 continue;
             }
-                
+
             const heimFeld = hohleHeimFeldIndex(zeile, spalte);
             //Heimfelder werden gefärbt
             if (heimFeld != null) {
@@ -109,6 +107,7 @@ function render() {
         }
     }
     prüfeFertig();
+    return spielbrett$;
 }
 
 // aus einer Koordinate vom Spielbrett wird der Laufbahnindex zurückgegeben
@@ -127,7 +126,7 @@ function holeLaufbahnIndex(zeile, spalte) {
         return 10 + spalte;
     }
     if (spalte === 4 && (zeile >= 0 && zeile <= 4)) {
-        return 15 + (3 - zeile); 
+        return 15 + (3 - zeile);
     }
     if (spalte === 5 && zeile === 0) {
         return 19;
@@ -139,7 +138,7 @@ function holeLaufbahnIndex(zeile, spalte) {
         return 24 + (spalte - 6);
     }
     if (spalte === 10 && zeile === 5) {
-        return 29//;
+        return 29;
     }
     if (zeile === 6 && (spalte <= 10 && spalte >= 6)) {
         return 30 + (10 - spalte);
@@ -252,19 +251,24 @@ function gibSpielerFarbe(id) {
             throw new Error('falscher Spieler');
     }
 }
+
+function spielzugAusfuehren() {
+    const wurfErgebnis = wuerfeln();
+    window.alert(`Spieler ${aktuellerSpieler} hat eine ${wurfErgebnis} gewürfelt`);
+    wechsleSpieler();
+}
+
+
 // schmeißt den Würfel und gibt ein Zahl von 1-6 aus
-function wurfeln() {
+function wuerfeln() {
+    wurfzaehler++;
     return Math.floor(Math.random() * 6) + 1; // Würfelt eine Zahl zwischen 1 und 6
 }
 
 //wechselt den aktuellen Spieler
 function wechsleSpieler() {
-    gewuerfelt = false;
     wurfzaehler = 0;
-
     aktuellerSpieler = (aktuellerSpieler + 1) % 4;
-
-    return aktuellerSpieler;
 }
 
 function setzeSpieler(figur) {
@@ -299,7 +303,7 @@ function setzeSpieler(figur) {
 
 
 function rauswerfen() {
-    
+
 }
 
 function prüfeFertig() {
@@ -320,6 +324,9 @@ function setzeSpielfigurPosition(spielerId, feldTyp, feldIndex, position) {
 
 // Wenn Seite lädt dann Spielfeld zeichnen
 window.onload = function () {
-    render();
+    
+    const spielbrett$=renderSpielbrett();
+    renderWuerfel(spielbrett$);
+
 }
 
