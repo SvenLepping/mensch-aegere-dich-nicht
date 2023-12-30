@@ -8,16 +8,16 @@ const spielerListe = [{
     //Laufbahnindex der Spielfigur
     //-1 = auf Heimfeld
     //40-43 Zielfeld
-    spielFiguren: [-1,-1,-1,-1],
+    spielFiguren: [-1, -1, -1, -1],
 }, {
     id: 1,
-    spielFiguren: [-1,-1,-1,-1],
+    spielFiguren: [-1, -1, -1, -1],
 }, {
     id: 2,
-    spielFiguren: [-1,-1,-1,-1],
+    spielFiguren: [-1, -1, -1, -1],
 }, {
     id: 3,
-    spielFiguren: [-1,-1,-1,-1],
+    spielFiguren: [-1, -1, -1, -1],
 }]
 
 // Array der Größe 52 wird erstellt und mit null initialisiert
@@ -25,7 +25,7 @@ const laufbahn = new Array(FeldGroesse * 4, null);
 
 function renderWuerfel(spielbrett$) {
     //Würfel wird zum Spielbrett hinzugefügt und css id wird gesetzt 
-    
+
     const wurfel$ = document.createElement('div');
     wurfel$.id = 'wuerfel';
     wurfel$.textContent = 'Jetzt würfeln';
@@ -69,6 +69,16 @@ function renderSpielbrett() {
                     feld$.className += ' basis-grün';
                 }
 
+                for (let spielerId = 0; spielerId < spielerListe.length; spielerId++) {
+                    const spieler = spielerListe[spielerId];
+                    const spielerFarbe = gibSpielerFarbe(spieler.id)
+                    if (spieler.spielFiguren.includes(laufbahnIndex)) {
+                        const spielfigur$ = document.createElement('div');
+                        spielfigur$.className = `spiel-figur spiel-figur-${spielerFarbe}`;
+                        feld$.appendChild(spielfigur$);
+                    }
+                }
+
                 continue;
             }
 
@@ -79,8 +89,8 @@ function renderSpielbrett() {
                 feld$.className += ` basis-${spielerFarbe}`;
 
                 const heimfeldAktuellerSpieler = spielerListe[heimFeld.spielerId];
-                const aktuelleSpielfigur= heimfeldAktuellerSpieler.spielFiguren[heimFeld.heimFeldIndex];
-                if (aktuelleSpielfigur===-1) {
+                const aktuelleSpielfigur = heimfeldAktuellerSpieler.spielFiguren[heimFeld.heimFeldIndex];
+                if (aktuelleSpielfigur === -1) {
                     const spielfigur$ = document.createElement('div');
                     spielfigur$.className = `spiel-figur spiel-figur-${spielerFarbe}`;
 
@@ -94,8 +104,8 @@ function renderSpielbrett() {
                 const spielerFarbe = gibSpielerFarbe(zielFeld.spielerId);
                 feld$.className += ` basis-${spielerFarbe}`;
 
-                const zielfeldAktuellerSpieler= spielerListe[zielFeld.spielerId];
-                const zielFeldPosition= zielFeld.zielFeldIndex + 40;
+                const zielfeldAktuellerSpieler = spielerListe[zielFeld.spielerId];
+                const zielFeldPosition = zielFeld.zielFeldIndex + 40;
                 if (zielfeldAktuellerSpieler.spielFiguren.includes(zielFeldPosition)) {
                     const spielfigur$ = document.createElement('div');
                     spielfigur$.className = `spiel-figur spiel-figur-${spielerFarbe}`;
@@ -264,37 +274,6 @@ function wechsleSpieler() {
     aktuellerSpieler = (aktuellerSpieler + 1) % 4;
 }
 
-function setzeSpieler(figur) {
-    if (gewuerfelt === true) {
-        const spieler = spielerListe[figur.spielerId];
-
-        // Überprüfen, ob die Figur im Heimfeld oder auf der Laufbahn ist
-        if (figur.heimFeldIndex !== undefined) {
-            // Figur ist im Heimfeld
-            if (wurfErgebnis === 6) {
-                // Wenn eine 6 gewürfelt wurde, darf die Figur auf die Laufbahn gesetzt werden
-                figur.heimFeldIndex = undefined; // Figur ist nicht mehr im Heimfeld
-                figur.laufbahnIndex = starteLaufbahnIndex(spieler.id); // Setzen Sie den Startindex für die Laufbahn
-            }
-        } else if (figur.laufbahnIndex !== undefined) {
-            // Figur ist auf der Laufbahn
-            const neuerLaufbahnIndex = figur.laufbahnIndex + wurfErgebnis;
-            // Überprüfen, ob die Figur das Zielfeld erreicht hat
-            if (neuerLaufbahnIndex >= FeldGroesse * 4) {
-                figur.zielFeldIndex = figur.zielFeldIndex + 1; // Bewegen Sie die Figur im Zielfeld weiter
-                figur.laufbahnIndex = undefined; // Figur ist nicht mehr auf der Laufbahn
-            } else {
-                // Setzen Sie den neuen Laufbahnindex für die Figur
-                figur.laufbahnIndex = neuerLaufbahnIndex;
-            }
-        }
-
-        // Wechseln Sie den Spieler nach dem Zug
-        wechsleSpieler();
-    }
-}
-
-
 function rauswerfen() {
 
 }
@@ -317,8 +296,8 @@ function setzeSpielfigurPosition(spielerId, feldTyp, feldIndex, position) {
 
 // Wenn Seite lädt dann Spielfeld zeichnen
 window.onload = function () {
-    
-    const spielbrett$=renderSpielbrett();
+
+    const spielbrett$ = renderSpielbrett();
     renderWuerfel(spielbrett$);
 
 }
