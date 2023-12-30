@@ -5,20 +5,19 @@ let wurfzaehler = 0;
 //SpielerListe erstellen mit 4 Spielern
 const spielerListe = [{
     id: 0,
-    heimfeld: [true, true, true, true],
-    zielfeld: [false, false, false, false]
+    //Laufbahnindex der Spielfigur
+    //-1 = auf Heimfeld
+    //40-43 Zielfeld
+    spielFiguren: [-1,-1,-1,-1],
 }, {
     id: 1,
-    heimfeld: [true, true, true, true],
-    zielfeld: [false, false, false, false]
+    spielFiguren: [-1,-1,-1,-1],
 }, {
     id: 2,
-    heimfeld: [true, true, true, true],
-    zielfeld: [false, false, false, false]
+    spielFiguren: [-1,-1,-1,-1],
 }, {
     id: 3,
-    heimfeld: [true, true, true, true],
-    zielfeld: [false, false, false, false]
+    spielFiguren: [-1,-1,-1,-1],
 }]
 
 // Array der Größe 52 wird erstellt und mit null initialisiert
@@ -79,8 +78,9 @@ function renderSpielbrett() {
                 const spielerFarbe = gibSpielerFarbe(heimFeld.spielerId);
                 feld$.className += ` basis-${spielerFarbe}`;
 
-                const heimFeldSpieler = spielerListe[heimFeld.spielerId];
-                if (heimFeldSpieler.heimfeld[heimFeld.heimFeldIndex]) {
+                const heimfeldAktuellerSpieler = spielerListe[heimFeld.spielerId];
+                const aktuelleSpielfigur= heimfeldAktuellerSpieler.spielFiguren[heimFeld.heimFeldIndex];
+                if (aktuelleSpielfigur===-1) {
                     const spielfigur$ = document.createElement('div');
                     spielfigur$.className = `spiel-figur spiel-figur-${spielerFarbe}`;
 
@@ -94,11 +94,11 @@ function renderSpielbrett() {
                 const spielerFarbe = gibSpielerFarbe(zielFeld.spielerId);
                 feld$.className += ` basis-${spielerFarbe}`;
 
-                const zielFeldSpieler = spielerListe[zielFeld.spielerId];
-                if (zielFeldSpieler.zielfeld[zielFeld.zielFeldIndex]) {
+                const zielfeldAktuellerSpieler= spielerListe[zielFeld.spielerId];
+                const zielFeldPosition= zielFeld.zielFeldIndex + 40;
+                if (zielfeldAktuellerSpieler.spielFiguren.includes(zielFeldPosition)) {
                     const spielfigur$ = document.createElement('div');
                     spielfigur$.className = `spiel-figur spiel-figur-${spielerFarbe}`;
-
                     feld$.appendChild(spielfigur$);
                 }
 
@@ -198,8 +198,6 @@ function hohleZielFeldIndex(zeile, spalte) {
     if (spalte === 5 && (zeile <= 9 && zeile >= 6)) {
         return {
             spielerId: 0,
-            startFeldIndex: 0,
-            //
             zielFeldIndex: 9 - zeile
         }
     }
@@ -207,8 +205,6 @@ function hohleZielFeldIndex(zeile, spalte) {
     if (zeile === 5 && (spalte >= 1 && spalte <= 4)) {
         return {
             spielerId: 1,
-            startFeldIndex: 10,
-            //
             zielFeldIndex: spalte - 1
         }
     }
@@ -216,8 +212,6 @@ function hohleZielFeldIndex(zeile, spalte) {
     if (spalte === 5 && (zeile >= 1 && zeile <= 4)) {
         return {
             spielerId: 2,
-            startFeldIndex: 20,
-            //
             zielFeldIndex: zeile - 1
         }
     }
@@ -225,8 +219,6 @@ function hohleZielFeldIndex(zeile, spalte) {
     if (zeile === 5 && (spalte >= 6 && spalte <= 9)) {
         return {
             spielerId: 3,
-            startFeldIndex: 30,
-            //
             zielFeldIndex: 9 - spalte
         }
     }
@@ -255,6 +247,7 @@ function gibSpielerFarbe(id) {
 function spielzugAusfuehren() {
     const wurfErgebnis = wuerfeln();
     window.alert(`Spieler ${aktuellerSpieler} hat eine ${wurfErgebnis} gewürfelt`);
+
     wechsleSpieler();
 }
 
