@@ -1,6 +1,6 @@
 const FeldGroesse = 11;
 let aktuellerSpielerID = 0;
-let wurfzaehler = 0;
+let wurfAnzahl = 0;
 
 //SpielerListe erstellen mit 4 Spielern
 const spielerListe = [{
@@ -23,22 +23,21 @@ const spielerListe = [{
 // Array der Größe 52 wird erstellt und mit null initialisiert
 const laufbahn = new Array(FeldGroesse * 4, null);
 
-function renderWuerfel(spielbrett$) {
+function renderWuerfel() {
     //Würfel wird zum Spielbrett hinzugefügt und css id wird gesetzt 
+    const wuerfel$ = document.querySelector('#wuerfel');
 
-    const wurfel$ = document.createElement('div');
-    wurfel$.id = 'wuerfel';
-    wurfel$.textContent = 'Jetzt würfeln';
-    spielbrett$.appendChild(wurfel$);
+    wuerfel$.textContent = 'Jetzt würfeln';
 
     //Würfel bekommt klick Funktion
-    wurfel$.addEventListener('click', spielzugAusfuehren);
+    wuerfel$.addEventListener('click', spielzugAusfuehren);
 }
 
 //Funktion um Spielfeld zu zeichnen
 function renderSpielbrett() {
     // Sucht im HTML die das Spielbrett Element anhand der ID
     const spielbrett$ = document.querySelector('#spielbrett');
+    spielbrett$.innerHTML = "";
 
     for (let zeile = 0; zeile < FeldGroesse; zeile++) {
         const zeile$ = document.createElement('div');
@@ -116,7 +115,6 @@ function renderSpielbrett() {
 
         }
     }
-    return spielbrett$;
 }
 
 // aus einer Koordinate vom Spielbrett wird der Laufbahnindex zurückgegeben
@@ -254,15 +252,30 @@ function gibSpielerFarbe(id) {
 }
 
 function spielzugAusfuehren() {
-    const aktiverSpieler =spielerListe[aktuellerSpielerID];
+    const aktiverSpieler = spielerListe[aktuellerSpielerID];
+    let darfErneutWuerfeln = false;
 
-    const wurfErgebnis = wuerfeln();
-    window.alert(`Spieler ${aktuellerSpielerID} hat eine ${wurfErgebnis} gewürfelt`);
-    if(prüfeFertig()){
+    //Spieler auf Startfeld setzen
+    if (aktiverSpieler.spielFiguren[0] === -1) {
+        const istRausKommen = figurStartfeld(aktiverSpieler);
+        darfErneutWuerfeln = istRausKommen || wurfAnzahl<3;
+    }
+    else {
+        const wurfErgebnis = wuerfeln();
+        aktiverSpieler.spielFiguren[0] += wurfErgebnis;
+        darfErneutWuerfeln = wurfErgebnis === 6;
+    }
+
+    renderSpielbrett();
+    if(darfErneutWuerfeln){
+        return;
+    }
+
+    if (prüfeFertig()) {
         window.alert(`Spieler ${aktuellerSpielerID} hat gewonnen!`);
     }
-    else{
-    wechsleSpieler();
+    else {
+        wechsleSpieler();
     }
 
 }
@@ -270,14 +283,16 @@ function spielzugAusfuehren() {
 
 // schmeißt den Würfel und gibt ein Zahl von 1-6 aus
 function wuerfeln() {
-    wurfzaehler++;
-    return Math.floor(Math.random() * 6) + 1; // Würfelt eine Zahl zwischen 1 und 6
+    wurfAnzahl++;
+    const wurfErgebnis = Math.floor(Math.random() * 6) + 1; // Würfelt eine Zahl zwischen 1 und 6
+    window.alert(`Spieler ${aktuellerSpielerID} hat eine ${wurfErgebnis} gewürfelt`);
+    return wurfErgebnis;
 }
 
 //wechselt den aktuellen Spieler
 function wechsleSpieler() {
-    wurfzaehler = 0;
     aktuellerSpielerID = (aktuellerSpielerID + 1) % 4;
+    wurfAnzahl = 0;
 }
 
 function rauswerfen() {
@@ -287,10 +302,21 @@ function rauswerfen() {
 function prüfeFertig() {
     for (const spieler of spielerListe) {
         // Überprüfen, ob alle Spielfiguren im Zielfeld sind
-        if (spieler.spielFiguren.every(figur => figur>=40)) {
-        return true;
+        if (spieler.spielFiguren.every(figur => figur >= 40)) {
+            return true;
         }
     }
+    return false;
+}
+
+//Figur auf Startfeld setzen
+function figurStartfeld(aktiverSpieler) {
+    const wurfErgebnis = wuerfeln();
+    if (wurfErgebnis === 6) {
+        aktiverSpieler.spielFiguren[0] = 10 * aktuellerSpielerID;
+        return true;
+    }
+
     return false;
 }
 
@@ -301,9 +327,7 @@ function setzeSpielfigurPosition(spielerId, feldTyp, feldIndex, position) {
 
 // Wenn Seite lädt dann Spielfeld zeichnen
 window.onload = function () {
-
-    const spielbrett$ = renderSpielbrett();
-    renderWuerfel(spielbrett$);
-
+    renderSpielbrett();
+    renderWuerfel();
 }
 
