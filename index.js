@@ -254,20 +254,67 @@ function gibSpielerFarbe(id) {
 function spielzugAusfuehren() {
     const aktiverSpieler = spielerListe[aktuellerSpielerID];
     let darfErneutWuerfeln = false;
+    let alleFigurenImHeimfeld = pruefungAlleFigurenHeimfeld(aktiverSpieler.spielFiguren);
 
-    //Spieler auf Startfeld setzen
-    if (aktiverSpieler.spielFiguren[0] === -1) {
-        const istRausKommen = figurStartfeld(aktiverSpieler);
-        darfErneutWuerfeln = istRausKommen || wurfAnzahl<3;
+    //wenn alle Figurne im Heimfeld sind
+    //Anpassung wenn alle im Heimfeld oder Gewinnfeld, also keiner auf der Laufbahn
+    if (alleFigurenImHeimfeld) {
+        for (let zaehler = 0; zaehler < 3; zaehler++) {
+            //Spieler auf Startfeld setzen
+            wurfAnzahl++;
+            const wurfErgebnis = wuerfeln();
+            const istRausKommen = figurStartfeld(aktiverSpieler, wurfErgebnis);
+            if (istRausKommen) {
+                const wurfErgebnis = wuerfeln();
+                aktiverSpieler.spielFiguren[0] += wurfErgebnis;
+                darfErneutWuerfeln = wurfErgebnis === 6;
+                break;
+            }
+            else {
+                darfErneutWuerfeln = false;
+            }
+        }
+        wurfAnzahl = 0;
     }
+    //nicht alle Figuren im Heimfeld
     else {
         const wurfErgebnis = wuerfeln();
-        aktiverSpieler.spielFiguren[0] += wurfErgebnis;
-        darfErneutWuerfeln = wurfErgebnis === 6;
+        if (wurfErgebnis === 6) {
+            for (let zaehler = 0; zaehler < 4; zaehler++) {
+                if (aktiverSpieler.spielFiguren[zaehler] === 10 * aktuellerSpielerID) {
+                    aktiverSpieler.spielFiguren[zaehler] += wurfErgebnis;
+                }
+                else {
+                    if (pruefungFigurenHeimfeld != 0) {
+                        figurStartfeld(aktiverSpieler, wurfErgebnis);
+                        darfErneutWuerfeln = true;
+                    }
+                    else {
+                        aktiverSpieler.spielFiguren[0] += wurfErgebnis;
+                        darfErneutWuerfeln = true;
+                    }
+
+                }
+
+            }
+        }
+        //Zahl 1-5 gewürfelt
+        else {
+            for (let zaehler = 0; zaehler < 4; zaehler++) {
+                if (aktiverSpieler.spielFiguren[zaehler] === 10 * aktuellerSpielerID) {
+                    aktiverSpieler.spielFiguren[zaehler] += wurfErgebnis;
+                }
+                else {
+                    aktiverSpieler.spielFiguren[0] += wurfErgebnis;
+                    darfErneutWuerfeln = false;
+                }
+            }
+
+        }
     }
 
     renderSpielbrett();
-    if(darfErneutWuerfeln){
+    if (darfErneutWuerfeln) {
         return;
     }
 
@@ -295,7 +342,10 @@ function wechsleSpieler() {
     wurfAnzahl = 0;
 }
 
-function rauswerfen() {
+function pruefungSpielFeldBesetzt(spielfeld){
+
+}
+function figurSchlagen() {
 
 }
 
@@ -310,19 +360,44 @@ function prüfeFertig() {
 }
 
 //Figur auf Startfeld setzen
-function figurStartfeld(aktiverSpieler) {
-    const wurfErgebnis = wuerfeln();
+function figurStartfeld(aktiverSpieler, wurfErgebnis) {
     if (wurfErgebnis === 6) {
-        aktiverSpieler.spielFiguren[0] = 10 * aktuellerSpielerID;
+        for (let zaehler = 0; zaehler < 4; zaehler++) {
+            if (aktiverSpieler.spielFiguren[zaehler] === -1) {
+                aktiverSpieler.spielFiguren[zaehler] = 10 * aktuellerSpielerID;
+                return true;
+            }
+        }
+    }
+    return false;
+
+}
+//Prüfen ob alle Figuren im Heimfeld sind
+function pruefungAlleFigurenHeimfeld(spielerListe) {
+    let anzahlFigurenHeimfeld = 0;
+
+    for (let zaehler = 0; zaehler < spielerListe.length; zaehler++) {
+        if (spielerListe[zaehler] === -1) {
+            anzahlFigurenHeimfeld++;
+        }
+    }
+    if (anzahlFigurenHeimfeld === 4) {
         return true;
     }
-
-    return false;
+    else {
+        return false;
+    }
 }
+//Anzahl der Figuren im Heimfeld prüfen
+function pruefungFigurenHeimfeld(spielerListe) {
+    let anzahlFigurenHeimfeld = 0;
 
-// Funktion, um die Position einer Spielfigur zu setzen
-function setzeSpielfigurPosition(spielerId, feldTyp, feldIndex, position) {
-    spielerListe[spielerId][feldTyp][feldIndex].position = position;
+    for (let zaehler = 0; zaehler < spielerListe.length; zaehler++) {
+        if (spielerListe[zaehler] === -1) {
+            anzahlFigurenHeimfeld++;
+        }
+    }
+    return anzahlFigurenHeimfeld;
 }
 
 // Wenn Seite lädt dann Spielfeld zeichnen
