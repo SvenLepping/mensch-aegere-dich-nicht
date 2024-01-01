@@ -255,6 +255,7 @@ function spielzugAusfuehren() {
     const aktiverSpieler = spielerListe[aktuellerSpielerID];
     let darfErneutWuerfeln = false;
     let alleFigurenImHeimfeld = pruefungAlleFigurenHeimfeld(aktiverSpieler.spielFiguren);
+    
 
     //wenn alle Figurne im Heimfeld sind
     //Anpassung wenn alle im Heimfeld oder Gewinnfeld, also keiner auf der Laufbahn
@@ -342,8 +343,8 @@ function wechsleSpieler() {
     wurfAnzahl = 0;
 }
 
-function pruefungSpielFeldBesetzt(spielfeld){
-
+function pruefungSpielFeldBesetzt(feldIndex,spielerListeSpieler0,spielerListeSpieler1,spielerListeSpieler2,spielerListeSpieler3){
+    //for(spielerListeSpieler0.includes(feldIndex)
 }
 function figurSchlagen() {
 
