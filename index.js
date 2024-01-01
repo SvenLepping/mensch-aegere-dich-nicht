@@ -1,43 +1,43 @@
 const FeldGroesse = 11;
+let aktuellerSpielerID = 0;
+let wurfAnzahl = 0;
 
 //SpielerListe erstellen mit 4 Spielern
 const spielerListe = [{
     id: 0,
-    heimfeld: [true, true, true, true],
-    zielfeld: [false, false, false, false]
+    //Laufbahnindex der Spielfigur
+    //-1 = auf Heimfeld
+    //40-43 Zielfeld
+    spielFiguren: [-1, -1, -1, -1],
 }, {
     id: 1,
-    heimfeld: [false, true, true, true],
-    zielfeld: [true, false, false, false]
+    spielFiguren: [-1, -1, -1, -1],
 }, {
     id: 2,
-    heimfeld: [false, true, true, true],
-    zielfeld: [true, false, false, false]
+    spielFiguren: [-1, -1, -1, -1],
 }, {
     id: 3,
-    heimfeld: [false, true, true, true],
-    zielfeld: [true, false, false, false]
+    spielFiguren: [-1, -1, -1, -1],
 }]
 
 // Array der Größe 52 wird erstellt und mit null initialisiert
 const laufbahn = new Array(FeldGroesse * 4, null);
 
+function renderWuerfel() {
+    //Würfel wird zum Spielbrett hinzugefügt und css id wird gesetzt 
+    const wuerfel$ = document.querySelector('#wuerfel');
+
+    wuerfel$.textContent = 'Jetzt würfeln';
+
+    //Würfel bekommt klick Funktion
+    wuerfel$.addEventListener('click', spielzugAusfuehren);
+}
+
 //Funktion um Spielfeld zu zeichnen
-function render() {
+function renderSpielbrett() {
     // Sucht im HTML die das Spielbrett Element anhand der ID
     const spielbrett$ = document.querySelector('#spielbrett');
-
-    //Würfel wird zum Spielbrett hinzugefügt und css id wird gesetzt 
-    const wurfel$ = document.createElement('div');
-    wurfel$.id = 'wuerfel';
-    wurfel$.textContent = 'Jetzt würfeln';
-    spielbrett$.appendChild(wurfel$);
-
-    //Würfel bekommt klick funktion
-    wurfel$.addEventListener('click', function () {
-        const wurfErgebnis = wurfeln();
-        alert(`Du hast eine ${wurfErgebnis} gewürfelt!`)
-    })
+    spielbrett$.innerHTML = "";
 
     for (let zeile = 0; zeile < FeldGroesse; zeile++) {
         const zeile$ = document.createElement('div');
@@ -68,17 +68,28 @@ function render() {
                     feld$.className += ' basis-grün';
                 }
 
+                for (let spielerId = 0; spielerId < spielerListe.length; spielerId++) {
+                    const spieler = spielerListe[spielerId];
+                    const spielerFarbe = gibSpielerFarbe(spieler.id)
+                    if (spieler.spielFiguren.includes(laufbahnIndex)) {
+                        const spielfigur$ = document.createElement('div');
+                        spielfigur$.className = `spiel-figur spiel-figur-${spielerFarbe}`;
+                        feld$.appendChild(spielfigur$);
+                    }
+                }
+
                 continue;
             }
 
-            const heimFeld = hohleHeimFeldIndex(zeile, spalte);
+            const heimFeld = holeHeimFeldIndex(zeile, spalte);
             //Heimfelder werden gefärbt
             if (heimFeld != null) {
                 const spielerFarbe = gibSpielerFarbe(heimFeld.spielerId);
                 feld$.className += ` basis-${spielerFarbe}`;
 
-                const heimFeldSpieler = spielerListe[heimFeld.spielerId];
-                if (heimFeldSpieler.heimfeld[heimFeld.heimFeldIndex]) {
+                const heimfeldAktuellerSpieler = spielerListe[heimFeld.spielerId];
+                const aktuelleSpielfigur = heimfeldAktuellerSpieler.spielFiguren[heimFeld.heimFeldIndex];
+                if (aktuelleSpielfigur === -1) {
                     const spielfigur$ = document.createElement('div');
                     spielfigur$.className = `spiel-figur spiel-figur-${spielerFarbe}`;
 
@@ -92,11 +103,11 @@ function render() {
                 const spielerFarbe = gibSpielerFarbe(zielFeld.spielerId);
                 feld$.className += ` basis-${spielerFarbe}`;
 
-                const zielFeldSpieler = spielerListe[zielFeld.spielerId];
-                if (zielFeldSpieler.zielfeld[zielFeld.zielFeldIndex]) {
+                const zielfeldAktuellerSpieler = spielerListe[zielFeld.spielerId];
+                const zielFeldPosition = zielFeld.zielFeldIndex + 40;
+                if (zielfeldAktuellerSpieler.spielFiguren.includes(zielFeldPosition)) {
                     const spielfigur$ = document.createElement('div');
                     spielfigur$.className = `spiel-figur spiel-figur-${spielerFarbe}`;
-
                     feld$.appendChild(spielfigur$);
                 }
 
@@ -122,7 +133,7 @@ function holeLaufbahnIndex(zeile, spalte) {
         return 10 + spalte;
     }
     if (spalte === 4 && (zeile >= 0 && zeile <= 4)) {
-        return 15 + (3 - zeile); 
+        return 15 + (3 - zeile);
     }
     if (spalte === 5 && zeile === 0) {
         return 19;
@@ -134,7 +145,7 @@ function holeLaufbahnIndex(zeile, spalte) {
         return 24 + (spalte - 6);
     }
     if (spalte === 10 && zeile === 5) {
-        return 29//;
+        return 29;
     }
     if (zeile === 6 && (spalte <= 10 && spalte >= 6)) {
         return 30 + (10 - spalte);
@@ -149,7 +160,7 @@ function holeLaufbahnIndex(zeile, spalte) {
     return null;
 }
 
-function hohleHeimFeldIndex(zeile, spalte) {
+function holeHeimFeldIndex(zeile, spalte) {
     //Spieler 1 Rot
     if (zeile >= 9 && zeile <= 10 && spalte <= 1) {
         return {
@@ -194,8 +205,6 @@ function hohleZielFeldIndex(zeile, spalte) {
     if (spalte === 5 && (zeile <= 9 && zeile >= 6)) {
         return {
             spielerId: 0,
-            startFeldIndex: 0,
-            //
             zielFeldIndex: 9 - zeile
         }
     }
@@ -203,8 +212,6 @@ function hohleZielFeldIndex(zeile, spalte) {
     if (zeile === 5 && (spalte >= 1 && spalte <= 4)) {
         return {
             spielerId: 1,
-            startFeldIndex: 10,
-            //
             zielFeldIndex: spalte - 1
         }
     }
@@ -212,8 +219,6 @@ function hohleZielFeldIndex(zeile, spalte) {
     if (spalte === 5 && (zeile >= 1 && zeile <= 4)) {
         return {
             spielerId: 2,
-            startFeldIndex: 20,
-            //
             zielFeldIndex: zeile - 1
         }
     }
@@ -221,8 +226,6 @@ function hohleZielFeldIndex(zeile, spalte) {
     if (zeile === 5 && (spalte >= 6 && spalte <= 9)) {
         return {
             spielerId: 3,
-            startFeldIndex: 30,
-            //
             zielFeldIndex: 9 - spalte
         }
     }
@@ -247,14 +250,84 @@ function gibSpielerFarbe(id) {
             throw new Error('falscher Spieler');
     }
 }
+
+function spielzugAusfuehren() {
+    const aktiverSpieler = spielerListe[aktuellerSpielerID];
+    let darfErneutWuerfeln = false;
+
+    //Spieler auf Startfeld setzen
+    if (aktiverSpieler.spielFiguren[0] === -1) {
+        const istRausKommen = figurStartfeld(aktiverSpieler);
+        darfErneutWuerfeln = istRausKommen || wurfAnzahl<3;
+    }
+    else {
+        const wurfErgebnis = wuerfeln();
+        aktiverSpieler.spielFiguren[0] += wurfErgebnis;
+        darfErneutWuerfeln = wurfErgebnis === 6;
+    }
+
+    renderSpielbrett();
+    if(darfErneutWuerfeln){
+        return;
+    }
+
+    if (prüfeFertig()) {
+        window.alert(`Spieler ${aktuellerSpielerID} hat gewonnen!`);
+    }
+    else {
+        wechsleSpieler();
+    }
+
+}
+
+
 // schmeißt den Würfel und gibt ein Zahl von 1-6 aus
-function wurfeln() {
-    return Math.floor(Math.random() * 6) + 1; // Würfelt eine Zahl zwischen 1 und 6
+function wuerfeln() {
+    wurfAnzahl++;
+    const wurfErgebnis = Math.floor(Math.random() * 6) + 1; // Würfelt eine Zahl zwischen 1 und 6
+    window.alert(`Spieler ${aktuellerSpielerID} hat eine ${wurfErgebnis} gewürfelt`);
+    return wurfErgebnis;
+}
+
+//wechselt den aktuellen Spieler
+function wechsleSpieler() {
+    aktuellerSpielerID = (aktuellerSpielerID + 1) % 4;
+    wurfAnzahl = 0;
+}
+
+function rauswerfen() {
+
+}
+
+function prüfeFertig() {
+    for (const spieler of spielerListe) {
+        // Überprüfen, ob alle Spielfiguren im Zielfeld sind
+        if (spieler.spielFiguren.every(figur => figur >= 40)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+//Figur auf Startfeld setzen
+function figurStartfeld(aktiverSpieler) {
+    const wurfErgebnis = wuerfeln();
+    if (wurfErgebnis === 6) {
+        aktiverSpieler.spielFiguren[0] = 10 * aktuellerSpielerID;
+        return true;
+    }
+
+    return false;
+}
+
+// Funktion, um die Position einer Spielfigur zu setzen
+function setzeSpielfigurPosition(spielerId, feldTyp, feldIndex, position) {
+    spielerListe[spielerId][feldTyp][feldIndex].position = position;
 }
 
 // Wenn Seite lädt dann Spielfeld zeichnen
 window.onload = function () {
-    render();
-
+    renderSpielbrett();
+    renderWuerfel();
 }
 

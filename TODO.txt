@@ -1,2 +1,7 @@
-- Würfel erstellen // mit Spielerwechsel
-- aktueller Spieler
+-alle Figuren Heimfeld prüfen
+-Zielfelder prüfen/ansteuern
+-Spielfiguren schlagen
+-Zielfelder nicht doppelt besetzen
+-verschiedenen Figuren ziehen
+
+
