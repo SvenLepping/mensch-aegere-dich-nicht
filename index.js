@@ -71,9 +71,13 @@ function renderSpielbrett() {
                 for (let spielerId = 0; spielerId < spielerListe.length; spielerId++) {
                     const spieler = spielerListe[spielerId];
                     const spielerFarbe = gibSpielerFarbe(spieler.id)
-                    if (spieler.spielFiguren.includes(laufbahnIndex)) {
+                    const spielFigurId = spieler.spielFiguren.indexOf(laufbahnIndex);
+                    if (spielFigurId !== -1) {
                         const spielfigur$ = document.createElement('div');
                         spielfigur$.className = `spiel-figur spiel-figur-${spielerFarbe}`;
+                        spielfigur$.addEventListener("click",function(){
+                            spielFigurGedrueckt(spielerId,spielFigurId,spieler.spielFiguren[spielFigurId]);
+                        })
                         feld$.appendChild(spielfigur$);
                     }
                 }
@@ -92,7 +96,9 @@ function renderSpielbrett() {
                 if (aktuelleSpielfigur === -1) {
                     const spielfigur$ = document.createElement('div');
                     spielfigur$.className = `spiel-figur spiel-figur-${spielerFarbe}`;
-
+                    spielfigur$.addEventListener("click",function(){
+                        spielFigurGedrueckt(heimFeld.spielerId,heimFeld.heimFeldIndex,-1);
+                    })
                     feld$.appendChild(spielfigur$);
                 }
             }
@@ -108,11 +114,12 @@ function renderSpielbrett() {
                 if (zielfeldAktuellerSpieler.spielFiguren.includes(zielFeldPosition)) {
                     const spielfigur$ = document.createElement('div');
                     spielfigur$.className = `spiel-figur spiel-figur-${spielerFarbe}`;
+                    spielfigur$.addEventListener("click",function(){
+                        spielFigurGedrueckt(zielFeld.spielerId,zielFeld.zielFeldIndex,zielFeldPosition);
+                    })
                     feld$.appendChild(spielfigur$);
                 }
-
             }
-
         }
     }
 }
@@ -335,6 +342,10 @@ function wuerfeln() {
     const wurfErgebnis = Math.floor(Math.random() * 6) + 1; // Würfelt eine Zahl zwischen 1 und 6
     window.alert(`Spieler ${aktuellerSpielerID} hat eine ${wurfErgebnis} gewürfelt`);
     return wurfErgebnis;
+}
+
+function spielFigurGedrueckt(spielerID,figurID,position){
+    console.log("Spielfigur gedrückt",spielerID,figurID,position);
 }
 
 //wechselt den aktuellen Spieler
