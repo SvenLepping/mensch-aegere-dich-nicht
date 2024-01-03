@@ -75,8 +75,8 @@ function renderSpielbrett() {
                     if (spielFigurId !== -1) {
                         const spielfigur$ = document.createElement('div');
                         spielfigur$.className = `spiel-figur spiel-figur-${spielerFarbe}`;
-                        spielfigur$.addEventListener("click",function(){
-                            spielFigurGedrueckt(spielerId,spielFigurId,spieler.spielFiguren[spielFigurId]);
+                        spielfigur$.addEventListener("click", function () {
+                            spielFigurGedrueckt(spielerId, spielFigurId, spieler.spielFiguren[spielFigurId]);
                         })
                         feld$.appendChild(spielfigur$);
                     }
@@ -96,8 +96,8 @@ function renderSpielbrett() {
                 if (aktuelleSpielfigur === -1) {
                     const spielfigur$ = document.createElement('div');
                     spielfigur$.className = `spiel-figur spiel-figur-${spielerFarbe}`;
-                    spielfigur$.addEventListener("click",function(){
-                        spielFigurGedrueckt(heimFeld.spielerId,heimFeld.heimFeldIndex,-1);
+                    spielfigur$.addEventListener("click", function () {
+                        spielFigurGedrueckt(heimFeld.spielerId, heimFeld.heimFeldIndex, -1);
                     })
                     feld$.appendChild(spielfigur$);
                 }
@@ -114,8 +114,8 @@ function renderSpielbrett() {
                 if (zielfeldAktuellerSpieler.spielFiguren.includes(zielFeldPosition)) {
                     const spielfigur$ = document.createElement('div');
                     spielfigur$.className = `spiel-figur spiel-figur-${spielerFarbe}`;
-                    spielfigur$.addEventListener("click",function(){
-                        spielFigurGedrueckt(zielFeld.spielerId,zielFeld.zielFeldIndex,zielFeldPosition);
+                    spielfigur$.addEventListener("click", function () {
+                        spielFigurGedrueckt(zielFeld.spielerId, zielFeld.zielFeldIndex, zielFeldPosition);
                     })
                     feld$.appendChild(spielfigur$);
                 }
@@ -236,7 +236,7 @@ function hohleZielFeldIndex(zeile, spalte) {
             zielFeldIndex: 9 - spalte
         }
     }
-
+    
     return null;
 }
 
@@ -244,13 +244,10 @@ function gibSpielerFarbe(id) {
     switch (id) {
         case 0:
             return 'rot';
-
         case 1:
             return 'blau';
-
         case 2:
             return 'gelb';
-
         case 3:
             return 'grün';
         default:
@@ -261,8 +258,50 @@ function gibSpielerFarbe(id) {
 function spielzugAusfuehren() {
     const aktiverSpieler = spielerListe[aktuellerSpielerID];
     let darfErneutWuerfeln = false;
-    let alleFigurenImHeimfeld = pruefungAlleFigurenHeimfeld(aktiverSpieler.spielFiguren);
-    
+
+    const wurfErgebnis = wuerfeln();
+
+    //Wenn sich kein Spieler auf der Laufbahn befindet
+    if (pruefungKeinSpielerLaufbahn(aktiverSpieler.spielFiguren)) {
+        if (wurfErgebnis < 6) {
+            if (wurfAnzahl < 3) {
+                wurfAnzahl++;
+                console.log(`Bitte Würfeln Sie erneut, Sie haben schon ${wurfAnzahl}/3 Versuchen benötigt.`);
+                darfErneutWuerfeln = true;
+            }
+            else {
+                darfErneutWuerfeln = false;
+            }
+        }
+        //6 gewürfelt
+        else {
+            const ersterSpielerImHeimfeld = erstenHeimFeldSpielerSuchen(aktiverSpieler.spielFiguren);
+            const indexAnkunftsFeld= ankunftsSpielFeldBerechnen(erstenHeimFeldSpielerSuchen,wurfErgebnis);
+            
+            if(pruefungSpielFeldBesetzt()){
+                if(pruefungBesetztEigenerSpieler(indexAnkunftsFeld,aktiverSpieler.spielFiguren)){
+                    console.log(`Ungültiger Zug, bitte eine andere Figur auswählen!`);
+                }
+            }
+            else{
+                aktiverSpieler.spielFiguren[ersterSpielerImHeimfeld] += wurfErgebnis;
+            }
+
+        }
+    }
+    //Wenn sich ein Spieler auf der Laufbahn befindet
+    else {
+        return;
+    }
+
+
+
+
+
+
+
+
+    //ALT!!
 
     //wenn alle Figurne im Heimfeld sind
     //Anpassung wenn alle im Heimfeld oder Gewinnfeld, also keiner auf der Laufbahn
@@ -344,8 +383,8 @@ function wuerfeln() {
     return wurfErgebnis;
 }
 
-function spielFigurGedrueckt(spielerID,figurID,position){
-    console.log("Spielfigur gedrückt",spielerID,figurID,position);
+function spielFigurGedrueckt(spielerID, figurID, position) {
+    console.log("Spielfigur gedrückt", spielerID, figurID, position);
 }
 
 //wechselt den aktuellen Spieler
@@ -354,9 +393,6 @@ function wechsleSpieler() {
     wurfAnzahl = 0;
 }
 
-function pruefungSpielFeldBesetzt(feldIndex,spielerListeSpieler0,spielerListeSpieler1,spielerListeSpieler2,spielerListeSpieler3){
-    //for(spielerListeSpieler0.includes(feldIndex)
-}
 function figurSchlagen() {
 
 }
@@ -384,32 +420,46 @@ function figurStartfeld(aktiverSpieler, wurfErgebnis) {
     return false;
 
 }
-//Prüfen ob alle Figuren im Heimfeld sind
-function pruefungAlleFigurenHeimfeld(spielerListe) {
-    let anzahlFigurenHeimfeld = 0;
+//Prüfung, ob sich kein Spieler auf der Laufbahn befindet
+function pruefungKeinSpielerLaufbahn(spielerListe) {
+    let anzahlFigurLaufbahn = 0;
 
     for (let zaehler = 0; zaehler < spielerListe.length; zaehler++) {
-        if (spielerListe[zaehler] === -1) {
-            anzahlFigurenHeimfeld++;
+        if (spielerListe[zaehler] >= 0 && spielerListe[zaehler] <= 39) {
+            anzahlFigurLaufbahn++;
         }
     }
-    if (anzahlFigurenHeimfeld === 4) {
+    if (anzahlFigurLaufbahn === 0) {
         return true;
     }
     else {
         return false;
     }
 }
-//Anzahl der Figuren im Heimfeld prüfen
-function pruefungFigurenHeimfeld(spielerListe) {
-    let anzahlFigurenHeimfeld = 0;
-
+//Ersten Heimfeld-Spieler suchen
+function erstenHeimFeldSpielerSuchen(spielerListe) {
     for (let zaehler = 0; zaehler < spielerListe.length; zaehler++) {
         if (spielerListe[zaehler] === -1) {
-            anzahlFigurenHeimfeld++;
+            return zaehler;
         }
     }
-    return anzahlFigurenHeimfeld;
+}
+function ankunftsSpielFeldBerechnen(indexAktuellesFeld, wurfZahl) {
+    return indexAktuellesFeld + wurfAnzahl;
+}
+function pruefungSpielFeldBesetzt(feldIndex, spielerListeSpieler0, spielerListeSpieler1, spielerListeSpieler2, spielerListeSpieler3) {
+    return spielerListeSpieler0.includes(feldIndex) || 
+           spielerListeSpieler1.includes(feldIndex) || 
+           spielerListeSpieler2.includes(feldIndex) || 
+           spielerListeSpieler3.includes(feldIndex);
+}
+function pruefungBesetztEigenerSpieler(feldIndex,spielerListe){
+    if(spielerListe.includes(feldIndex)){
+        return true;
+    }
+    else{
+        return false;
+    }
 }
 
 // Wenn Seite lädt dann Spielfeld zeichnen
