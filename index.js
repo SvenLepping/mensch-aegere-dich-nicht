@@ -269,8 +269,8 @@ function spielzugAusfuehren() {
     //Wenn sich kein Spieler auf der Laufbahn befindet
     if (pruefungKeinSpielerLaufbahn(aktiverSpieler.spielFiguren)) {
         if (wurfErgebnis < 6) {
-            if (wurfAnzahl <= 3) {
-                console.log(`Bitte Würfeln Sie erneut, Sie haben schon ${wurfAnzahl}/3 Versuchen benötigt.`);
+            console.log(`Bitte Würfeln Sie erneut, Sie haben schon ${wurfAnzahl}/3 Versuchen benötigt.`);
+            if (wurfAnzahl < 3) {
                 darfErneutWuerfeln = true;
             }
             else {
@@ -279,18 +279,24 @@ function spielzugAusfuehren() {
         }
         //6 gewürfelt
         else {
+            darfErneutWuerfeln = true;
             const ersterSpielerImHeimfeld = erstenHeimFeldSpielerSuchen(aktiverSpieler.spielFiguren);
-            const indexAnkunftsFeld = ankunftsSpielFeldBerechnen(erstenHeimFeldSpielerSuchen, wurfErgebnis);
+            //const indexAnkunftsFeld = ankunftsSpielFeldBerechnen(erstenHeimFeldSpielerSuchen, wurfErgebnis);
+            let startFeldSpieler = aktuellerSpielerID*10;
+            console.log(`StartFeldSpieler = ${startFeldSpieler}`);
 
-            if (pruefungSpielFeldBesetzt(indexAnkunftsFeld)) {
-                if (pruefungBesetztEigenerSpieler(indexAnkunftsFeld, aktiverSpieler.spielFiguren)) {
+            if (pruefungSpielFeldBesetzt(startFeldSpieler)) {
+                if (pruefungBesetztEigenerSpieler(startFeldSpieler, aktiverSpieler.spielFiguren)) {
                     console.log(`Ungültiger Zug, bitte eine andere Figur auswählen!`);
+                }
+                else {
+                    console.log("Spielfeld besetzt");
+                    figurSchlagen(startFeldSpieler);
+                    figurStartfeld(aktiverSpieler, ersterSpielerImHeimfeld);
                 }
             }
             else {
                 figurStartfeld(aktiverSpieler, ersterSpielerImHeimfeld);
-                console.log("Spielfeld besetzt");
-                figurSchlagen(indexAnkunftsFeld, spielFigurenSpieler0, spielFigurenSpieler1, spielFigurenSpieler2, spielFigurenSpieler3);
             }
 
         }
@@ -401,69 +407,75 @@ function wechsleSpieler() {
     wurfAnzahl = 0;
 }
 
-function figurSchlagen(feldIndex, spielerListeSpieler0, spielerListeSpieler1, spielerListeSpieler2, spielerListeSpieler3) {
+function figurSchlagen(feldIndex) {
     let spielerIdGeschlagen = -1;
     let spielFigurIndex = -1;
     if (aktuellerSpielerID === 0) {
-        if (spielerListeSpieler1.indexOf(feldIndex) !== -1) {
-            spielFigurIndex = spielerListeSpieler1.indexOf(feldIndex);
+        console.log("SpielerId=0")
+        if (spielerListe[1].spielFiguren.indexOf(feldIndex) !== -1) {
+            spielFigurIndex = spielerListe[1].spielFiguren.indexOf(feldIndex);
             spielerIdGeschlagen = 1;
         }
-        if (spielerListeSpieler2.indexOf(feldIndex) !== -1) {
-            spielFigurIndex = spielerListeSpieler2.indexOf(feldIndex);
+        if (spielerListe[2].spielFiguren.indexOf(feldIndex) !== -1) {
+            spielFigurIndex = spielerListe[2].spielFiguren.indexOf(feldIndex);
             spielerIdGeschlagen = 2;
         }
-        if (spielerListeSpieler3.indexOf(feldIndex) !== -1) {
-            spielFigurIndex = spielerListeSpieler3.indexOf(feldIndex);
+        if (spielerListe[3].spielFiguren.indexOf(feldIndex) !== -1) {
+            spielFigurIndex = spielerListe[3].spielFiguren.indexOf(feldIndex);
             spielerIdGeschlagen = 3;
         }
     }
     if (aktuellerSpielerID === 1) {
-        if (spielerListeSpieler0.indexOf(feldIndex) !== -1) {
-            spielFigurIndex = spielerListeSpieler0.indexOf(feldIndex);
+        console.log("SpielerId=1")
+        if (spielerListe[0].spielFiguren.indexOf(feldIndex) !== -1) {
+            spielFigurIndex = spielerListe[0].spielFiguren.indexOf(feldIndex);
             spielerIdGeschlagen = 0;
         }
-        if (spielerListeSpieler2.indexOf(feldIndex) !== -1) {
-            spielFigurIndex = spielerListeSpieler2.indexOf(feldIndex);
+        if (spielerListe[2].spielFiguren.indexOf(feldIndex) !== -1) {
+            spielFigurIndex = spielerListe[2].spielFiguren.indexOf(feldIndex);
             spielerIdGeschlagen = 2;
         }
-        if (spielerListeSpieler3.indexOf(feldIndex) !== -1) {
-            spielFigurIndex = spielerListeSpieler3.indexOf(feldIndex);
+        if (spielerListe[3].spielFiguren.indexOf(feldIndex) !== -1) {
+            spielFigurIndex = spielerListe[3].spielFiguren.indexOf(feldIndex);
             spielerIdGeschlagen = 3;
         }
     }
     if (aktuellerSpielerID === 2) {
-        if (spielerListeSpieler0.indexOf(feldIndex) !== -1) {
-            spielFigurIndex = spielerListeSpieler0.indexOf(feldIndex);
+        console.log("SpielerId=2")
+        if (spielerListe[0].spielFiguren.indexOf(feldIndex) !== -1) {
+            spielFigurIndex = spielerListe[0].spielFiguren.indexOf(feldIndex);
             spielerIdGeschlagen = 0;
         }
-        if (spielerListeSpieler1.indexOf(feldIndex) !== -1) {
-            spielFigurIndex = spielerListeSpieler1.indexOf(feldIndex);
+        if (spielerListe[1].spielFiguren.indexOf(feldIndex) !== -1) {
+            spielFigurIndex = spielerListe[1].spielFiguren.indexOf(feldIndex);
             spielerIdGeschlagen = 1;
         }
-        if (spielerListeSpieler3.indexOf(feldIndex) !== -1) {
-            spielFigurIndex = spielerListeSpieler3.indexOf(feldIndex);
+        if (spielerListe[3].spielFiguren.indexOf(feldIndex) !== -1) {
+            spielFigurIndex = spielerListe[3].spielFiguren.indexOf(feldIndex);
             spielerIdGeschlagen = 3;
         }
     }
     if (aktuellerSpielerID === 3) {
-        if (spielerListeSpieler0.indexOf(feldIndex) !== -1) {
-            spielFigurIndex = spielerListeSpieler0.indexOf(feldIndex);
+        console.log("SpielerId=3")
+        if (spielerListe[0].spielFiguren.indexOf(feldIndex) !== -1) {
+            spielFigurIndex = spielerListe[0].spielFiguren.indexOf(feldIndex);
             spielerIdGeschlagen = 0;
         }
-        if (spielerListeSpieler1.indexOf(feldIndex) !== -1) {
-            spielFigurIndex = spielerListeSpieler1.indexOf(feldIndex);
+        if (spielerListe[1].spielFiguren.indexOf(feldIndex) !== -1) {
+            spielFigurIndex = spielerListe[1].spielFiguren.indexOf(feldIndex);
             spielerIdGeschlagen = 1;
         }
-        if (spielerListeSpieler2.indexOf(feldIndex) !== -1) {
-            spielFigurIndex = spielerListeSpieler2.indexOf(feldIndex);
+        if (spielerListe[2].spielFiguren.indexOf(feldIndex) !== -1) {
+            spielFigurIndex = spielerListe[2].spielFiguren.indexOf(feldIndex);
             spielerIdGeschlagen = 2;
         }
     }
     else {
         console.log("Spieler ID nicht gefunden.");
     }
-    spielerListe[spielerIdGeschlagen].spielFiguren[spielFigurIndex] = -1;
+    console.log(` SpielerIdGeschlagen =${spielerIdGeschlagen} / SpielerFigurIndex = ${spielFigurIndex}`);
+    const spielerListeGeschlagen = spielerListe[spielerIdGeschlagen];
+    spielerListeGeschlagen.spielFiguren[spielFigurIndex] = -1;
 }
 
 function prüfeFertig() {
@@ -505,7 +517,7 @@ function erstenHeimFeldSpielerSuchen(spielerListe) {
     }
 }
 function ankunftsSpielFeldBerechnen(indexAktuellesFeld, wurfZahl) {
-    return indexAktuellesFeld + wurfAnzahl;
+    return indexAktuellesFeld + wurfZahl;
 }
 function pruefungSpielFeldBesetzt(feldIndex) {
     return spielerListe[0].spielFiguren.includes(feldIndex) ||
