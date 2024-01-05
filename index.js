@@ -258,12 +258,6 @@ function gibSpielerFarbe(id) {
 function spielzugAusfuehren() {
     const aktiverSpieler = spielerListe[aktuellerSpielerID];
     let darfErneutWuerfeln = false;
-    /*
-    let spielFigurenSpieler0 = spielerListe[0].spielFiguren;
-    let spielFigurenSpieler1 = spielerListe[1].spielFiguren;
-    let spielFigurenSpieler2 = spielerListe[2].spielFiguren;
-    let spielFigurenSpieler3 = spielerListe[3].spielFiguren;
-    */
     const wurfErgebnis = wuerfeln();
 
     //Wenn sich kein Spieler auf der Laufbahn befindet
@@ -305,74 +299,6 @@ function spielzugAusfuehren() {
     else {
         aktiverSpieler.spielFiguren[2] += wurfErgebnis;
     }
-
-
-
-
-
-
-
-
-    /*ALT!!
-
-    //wenn alle Figurne im Heimfeld sind
-    //Anpassung wenn alle im Heimfeld oder Gewinnfeld, also keiner auf der Laufbahn
-    if (alleFigurenImHeimfeld) {
-        for (let zaehler = 0; zaehler < 3; zaehler++) {
-            //Spieler auf Startfeld setzen
-            wurfAnzahl++;
-            const wurfErgebnis = wuerfeln();
-            const istRausKommen = figurStartfeld(aktiverSpieler, wurfErgebnis);
-            if (istRausKommen) {
-                const wurfErgebnis = wuerfeln();
-                aktiverSpieler.spielFiguren[0] += wurfErgebnis;
-                darfErneutWuerfeln = wurfErgebnis === 6;
-                break;
-            }
-            else {
-                darfErneutWuerfeln = false;
-            }
-        }
-        wurfAnzahl = 0;
-    }
-    //nicht alle Figuren im Heimfeld
-    else {
-        const wurfErgebnis = wuerfeln();
-        if (wurfErgebnis === 6) {
-            for (let zaehler = 0; zaehler < 4; zaehler++) {
-                if (aktiverSpieler.spielFiguren[zaehler] === 10 * aktuellerSpielerID) {
-                    aktiverSpieler.spielFiguren[zaehler] += wurfErgebnis;
-                }
-                else {
-                    if (pruefungFigurenHeimfeld != 0) {
-                        figurStartfeld(aktiverSpieler, wurfErgebnis);
-                        darfErneutWuerfeln = true;
-                    }
-                    else {
-                        aktiverSpieler.spielFiguren[0] += wurfErgebnis;
-                        darfErneutWuerfeln = true;
-                    }
-
-                }
-
-            }
-        }
-        //Zahl 1-5 gewürfelt
-        else {
-            for (let zaehler = 0; zaehler < 4; zaehler++) {
-                if (aktiverSpieler.spielFiguren[zaehler] === 10 * aktuellerSpielerID) {
-                    aktiverSpieler.spielFiguren[zaehler] += wurfErgebnis;
-                }
-                else {
-                    aktiverSpieler.spielFiguren[0] += wurfErgebnis;
-                    darfErneutWuerfeln = false;
-                }
-            }
-
-        }
-    }
-    */
-
 
     renderSpielbrett();
     if (darfErneutWuerfeln) {
