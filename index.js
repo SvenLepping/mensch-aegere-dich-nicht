@@ -20,7 +20,7 @@ const spielerListe = [{
     spielFiguren: [-1, -1, -1, -1],
 }, {
     id: 3,
-    spielFiguren: [-1, 0, 10, 20],
+    spielFiguren: [-1, -1, -1, -1],
 }]
 
 // Array der Größe 52 wird erstellt und mit null initialisiert
@@ -262,80 +262,114 @@ function spielzugAusfuehren() {
     const aktiverSpieler = spielerListe[aktuellerSpielerID];
     let darfErneutWuerfeln = false;
     const wurfErgebnis = wuerfeln();
+    //Prüfung ob Startfeld mit eigenem Spieler besetzt ist
+    if (pruefungSpielFeldBesetzt(aktuellerSpielerID * 10) && pruefungBesetztEigenerSpieler(aktuellerSpielerID * 10)) {
+        const indexFigurStartfeld = indexEigeneFigurStartFeld();
+        const indexAnkunftsFeld = ankunftsSpielFeldBerechnen(aktuellerSpielerID * 10, wurfErgebnis);
 
-    //Wenn sich kein Spieler auf der Laufbahn befindet
-    if (pruefungKeinSpielerLaufbahn(aktiverSpieler.spielFiguren)) {
-        if (wurfErgebnis < 6) {
-            console.log(`Bitte Würfeln Sie erneut, Sie haben schon ${wurfAnzahl}/3 Versuchen benötigt.`);
-            if (wurfAnzahl < 3) {
-                darfErneutWuerfeln = true;
+        if (pruefungSpielFeldBesetzt(indexAnkunftsFeld)) {
+            if (pruefungBesetztEigenerSpieler(indexAnkunftsFeld)) {
+                console.log(`Ungültiger Zug, bitte eine andere Figur auswählen!`);
+                //Hier noch anpassen neue Spielfigur auswählen
             }
             else {
-                darfErneutWuerfeln = false;
+                figurSchlagen(indexAnkunftsFeld);
+                aktiverSpieler.spielFiguren[indexFigurStartfeld] += wurfErgebnis;
             }
+        } else {
+            aktiverSpieler.spielFiguren[indexFigurStartfeld] += wurfErgebnis;
         }
-        //6 gewürfelt
-        else {
+
+        if (wurfErgebnis === 6) {
             darfErneutWuerfeln = true;
-            const ersterSpielerImHeimfeld = erstenHeimFeldSpielerSuchen(aktiverSpieler.spielFiguren);
-            //const indexAnkunftsFeld = ankunftsSpielFeldBerechnen(erstenHeimFeldSpielerSuchen, wurfErgebnis);
-            let startFeldSpieler = aktuellerSpielerID * 10;
-            console.log(`StartFeldSpieler = ${startFeldSpieler}`);
-
-            if (pruefungSpielFeldBesetzt(startFeldSpieler)) {
-                if (pruefungBesetztEigenerSpieler(startFeldSpieler, aktiverSpieler.spielFiguren)) {
-                    console.log(`Ungültiger Zug, bitte eine andere Figur auswählen!`);
-                    //wird nie eintreten, da kein Spieler auf der Laufbahn ist (wie oben geprüft)
-                }
-                else {
-                    console.log("Spielfeld besetzt");
-                    figurSchlagen(startFeldSpieler);
-                    figurStartfeld(aktiverSpieler, ersterSpielerImHeimfeld);
-                }
-            }
-            else {
-                figurStartfeld(aktiverSpieler, ersterSpielerImHeimfeld);
-            }
-
         }
     }
-    //Wenn sich ein Spieler auf der Laufbahn befindet
     else {
-        if (wurfErgebnis < 6) {
-
-        }
-        else {
-            darfErneutWuerfeln = true;
-            if (minEinSpielerHeimfeld) {
+        //Wenn sich kein Spieler auf der Laufbahn befindet
+        if (pruefungKeinSpielerLaufbahn(aktiverSpieler.spielFiguren)) {
+            if (wurfErgebnis < 6) {
+                console.log(`Bitte Würfeln Sie erneut, Sie haben schon ${wurfAnzahl}/3 Versuchen benötigt.`);
+                if (wurfAnzahl < 3) {
+                    darfErneutWuerfeln = true;
+                }
+                else {
+                    darfErneutWuerfeln = false;
+                }
+            }
+            //6 gewürfelt
+            else {
+                darfErneutWuerfeln = true;
                 const ersterSpielerImHeimfeld = erstenHeimFeldSpielerSuchen(aktiverSpieler.spielFiguren);
+                //const indexAnkunftsFeld = ankunftsSpielFeldBerechnen(erstenHeimFeldSpielerSuchen, wurfErgebnis);
                 let startFeldSpieler = aktuellerSpielerID * 10;
-                const indexAnkunftsFeld = ankunftsSpielFeldBerechnen(startFeldSpieler, wurfErgebnis);
+                console.log(`StartFeldSpieler = ${startFeldSpieler}`);
+
                 if (pruefungSpielFeldBesetzt(startFeldSpieler)) {
-                    if (pruefungBesetztEigenerSpieler(startFeldSpieler, aktiverSpieler.spielFiguren)) {
-                        aktiverSpieler.spielFiguren[indexEigenFigurStartFeld()] += wurfErgebnis;
+                    if (pruefungBesetztEigenerSpieler(startFeldSpieler)) {
+                        console.log(`Ungültiger Zug, bitte eine andere Figur auswählen!`);
+                        //wird nie eintreten, da kein Spieler auf der Laufbahn ist (wie oben geprüft)
                     }
                     else {
                         console.log("Spielfeld besetzt");
                         figurSchlagen(startFeldSpieler);
                         figurStartfeld(aktiverSpieler, ersterSpielerImHeimfeld);
                     }
-                }/* Ab hier muss weiter programmiert werden !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                To Do:
-                - BPMN anpassen (mind.1 Spieler Heimfeld nein ergänzen / bei jedem Wurf pürfen ob Startfeld besetzt vom eigenen Spieler)
+                }
                 else {
-                    
-                    if (gedrueckteSpielerID === aktuellerSpielerID) {
-                        aktiverSpieler.spielfigur[gedrueckteFigurID] =
-                    }
-                    else{
-                        console.log("Fremde Spielfigur. Wähle eine eigene aus!");
-                    }
                     figurStartfeld(aktiverSpieler, ersterSpielerImHeimfeld);
                 }
-                */
+
             }
         }
-        aktiverSpieler.spielFiguren[2] += wurfErgebnis;
+        //Wenn sich ein Spieler auf der Laufbahn befindet
+        else {
+            if (wurfErgebnis < 6) {
+
+            }
+            else {
+                darfErneutWuerfeln = true;
+                //Prüfung ob noch ein Spieler im Heimfeld ist
+                if (minEinSpielerHeimfeld) {
+                    const ersterSpielerImHeimfeld = erstenHeimFeldSpielerSuchen(aktiverSpieler.spielFiguren);
+                    let startFeldSpieler = aktuellerSpielerID * 10;
+                    const indexAnkunftsFeld = ankunftsSpielFeldBerechnen(startFeldSpieler, wurfErgebnis);
+                    //Prüfung ob das Startfeld besetzt ist
+                    if (pruefungSpielFeldBesetzt(startFeldSpieler)) {
+                        //besetzt durch eigenen Spieler
+                        if (pruefungBesetztEigenerSpieler(startFeldSpieler)) {
+                            //Prüfung ob Ankunftsspielfeld besetzt 
+                            if (pruefungSpielFeldBesetzt(indexAnkunftsFeld)) {
+                                console.log(`Ungültiger Zug, bitte eine andere Figur auswählen!`);
+                                //Hier noch anpassen neue Spielfigur auswählen
+                                if (pruefungBesetztEigenerSpieler(indexAnkunftsFeld)) {
+                                    console.log(`Ungültiger Zug, bitte eine andere Figur auswählen!`);
+                                    //Hier noch anpassen neue Spielfigur auswählen  
+                                }
+                                else {
+                                    console.log("Spielfeld besetzt");
+                                    figurSchlagen(indexAnkunftsFeld);
+                                    aktiverSpieler.spielFiguren[indexEigeneFigurStartFeld()] += wurfErgebnis;
+
+                                }
+                            } else {
+                                aktiverSpieler.spielFiguren[indexEigeneFigurStartFeld()] += wurfErgebnis;
+                            }
+                        }
+                        else {
+                            console.log("Spielfeld besetzt");
+                            figurSchlagen(startFeldSpieler);
+                            figurStartfeld(aktiverSpieler, ersterSpielerImHeimfeld);
+                        }
+                    }
+                    else {
+                        figurStartfeld(aktiverSpieler, ersterSpielerImHeimfeld);
+                    }
+                }
+                else {
+                    //Figur für Zug auswählen
+                }
+            }
+        }
     }
 
     renderSpielbrett();
@@ -494,8 +528,8 @@ function pruefungSpielFeldBesetzt(feldIndex) {
         spielerListe[3].spielFiguren.includes(feldIndex);
 }
 
-function pruefungBesetztEigenerSpieler(feldIndex, spielerListe) {
-    if (spielerListe.includes(feldIndex)) {
+function pruefungBesetztEigenerSpieler(feldIndex) {
+    if (spielerListe[aktuellerSpielerID].spielFiguren.includes(feldIndex)) {
         return true;
     }
     else {
@@ -510,8 +544,8 @@ function minEinSpielerHeimfeld() {
     return false;
 }
 
-function indexEigenFigurStartFeld() {
-    return spielerListe[aktuellerSpielerID].spielFiguren.includes(aktuellerSpielerID*10);
+function indexEigeneFigurStartFeld() {
+    return spielerListe[aktuellerSpielerID].spielFiguren.indexOf(aktuellerSpielerID * 10);
 }
 
 // Wenn Seite lädt dann Spielfeld zeichnen
