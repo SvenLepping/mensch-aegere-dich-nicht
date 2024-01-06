@@ -1,9 +1,9 @@
 const FeldGroesse = 11;
 let aktuellerSpielerID = 0;
 let wurfAnzahl = 0;
-let gedrueckteSpielerID = -1;
-let gedrueckteFigurID = -1;
-let gedruecktePosition = -1;
+let gedrueckteSpielerID = null;
+let gedrueckteFigurID = null;
+let gedruecktePosition = null;
 
 //SpielerListe erstellen mit 4 Spielern
 const spielerListe = [{
@@ -284,6 +284,7 @@ function spielzugAusfuehren() {
             darfErneutWuerfeln = true;
         }
     }
+    // Startfeld nicht mit eigenem Spieler besetzt
     else {
         //Wenn sich kein Spieler auf der Laufbahn befindet
         if (pruefungKeinSpielerLaufbahn(aktiverSpieler.spielFiguren)) {
@@ -300,7 +301,6 @@ function spielzugAusfuehren() {
             else {
                 darfErneutWuerfeln = true;
                 const ersterSpielerImHeimfeld = erstenHeimFeldSpielerSuchen(aktiverSpieler.spielFiguren);
-                //const indexAnkunftsFeld = ankunftsSpielFeldBerechnen(erstenHeimFeldSpielerSuchen, wurfErgebnis);
                 let startFeldSpieler = aktuellerSpielerID * 10;
                 console.log(`StartFeldSpieler = ${startFeldSpieler}`);
 
@@ -323,9 +323,15 @@ function spielzugAusfuehren() {
         }
         //Wenn sich ein Spieler auf der Laufbahn befindet
         else {
+            //wenn 1-5 gewürfelt wird
             if (wurfErgebnis < 6) {
-
+                /* Hier muss noch die Figur ausgewählt werden!
+                spielFigurAuswaehlen(wurfErgebnis);
+                spielerListe[aktuellerSpielerID].spielFiguren(gedrueckteFigurID) += wurfErgebnis;
+                spielFigurAuswahlZuruecksetzen();
+                */
             }
+            //wenn eine 6 gewürfelt wird
             else {
                 darfErneutWuerfeln = true;
                 //Prüfung ob noch ein Spieler im Heimfeld ist
@@ -337,10 +343,8 @@ function spielzugAusfuehren() {
                     if (pruefungSpielFeldBesetzt(startFeldSpieler)) {
                         //besetzt durch eigenen Spieler
                         if (pruefungBesetztEigenerSpieler(startFeldSpieler)) {
-                            //Prüfung ob Ankunftsspielfeld besetzt 
+                            //Prüfung ob Ankunftsspielfeld besetzt ist wenn Spielfigur von Startfeld weitergesetzt wird
                             if (pruefungSpielFeldBesetzt(indexAnkunftsFeld)) {
-                                console.log(`Ungültiger Zug, bitte eine andere Figur auswählen!`);
-                                //Hier noch anpassen neue Spielfigur auswählen
                                 if (pruefungBesetztEigenerSpieler(indexAnkunftsFeld)) {
                                     console.log(`Ungültiger Zug, bitte eine andere Figur auswählen!`);
                                     //Hier noch anpassen neue Spielfigur auswählen  
@@ -365,6 +369,7 @@ function spielzugAusfuehren() {
                         figurStartfeld(aktiverSpieler, ersterSpielerImHeimfeld);
                     }
                 }
+                //Wenn kein Spieler im heimfeld ist
                 else {
                     //Figur für Zug auswählen
                 }
@@ -396,12 +401,98 @@ function wuerfeln() {
 }
 
 function spielFigurGedrueckt(spielerID, figurID, position) {
-    let gedrueckteSpielerID = spielerID;
-    let gedrueckteFigurID = figurID;
-    let gedruecktePosition = position;
+    gedrueckteSpielerID = spielerID;
+    gedrueckteFigurID = figurID;
+    gedruecktePosition = position;
 
     console.log("Spielfigur gedrückt", spielerID, figurID, position);
 }
+
+function spielFigurAuswaehlen(wurfErgebnis) {
+    let figurGeaendert = pruefeAenderungFigurAuswahl();
+    console.log(figurGeaendert);
+    if (figurGeaendert) {
+        console.log(`Funktion pruefeAenderungFigurAuswahl ${gedrueckteSpielerID}${aktuellerSpielerID}`);
+        if (gedrueckteSpielerID === aktuellerSpielerID) {
+            console.log("gedrueckteSpielerID === aktuellerSpielerID");
+            const indexAnkunftsFeld = ankunftsSpielFeldBerechnen(gedruecktePosition, wurfErgebnis);
+            if (pruefungSpielFeldBesetzt(indexAnkunftsFeld)) {
+                if (pruefungBesetztEigenerSpieler(indexAnkunftsFeld)) {
+                    //andere Figur auswählen
+                    console.log("andere Spielfigur auswählen");
+                } else {
+                    console.log("Spielfeld besetzt");
+                    figurSchlagen(indexAnkunftsFeld);
+                    spielerListe[aktuellerSpielerID].spielFiguren(gedrueckteFigurID) += wurfErgebnis;
+                }
+            } else {
+                spielerListe[aktuellerSpielerID].spielFiguren(gedrueckteFigurID) += wurfErgebnis;
+            }
+        } 
+        else {
+            console.log("Ich bin else innen")
+            /*
+            pruefeAenderungFigurAuswahl();
+            console.log("Ungültige Figurauswahl");
+            // Hier muss eine neue Figur ausgewählt werden
+            */
+            return;
+        }
+    }
+    else{
+        console.log("Hier bin ich else außen");
+    }
+}
+
+function spielFigurAuswahlZuruecksetzen() {
+    gedrueckteSpielerID = null;
+    gedrueckteFigurID = null;
+    gedruecktePosition = null;
+}
+/* Chat GPT
+async function pruefeAenderungFigurAuswahl() {
+    await warteAufAenderung();
+    if (gedruecktePosition===null) {
+        pruefeAenderungFigurAuswahl();
+        console.log("Änderung wird geprüft!");
+    } else {
+        return true;
+    }
+}
+
+function warteAufAenderung() {
+    return new Promise(resolve => {
+        setTimeout(()  => {
+            resolve();
+        }, 3000); 
+    });
+}
+*/
+
+/* Chat GPT
+function warteAufAenderung() {
+    return new Promise(resolve => {
+        const intervalId = setInterval(() => {
+            if (gedruecktePosition !== null) {
+                clearInterval(intervalId);
+                console.log("Änderung erkannt!");
+                console.log(`${gedrueckteSpielerID} ${gedrueckteFigurID} ${gedruecktePosition}`);
+                resolve(true);
+            } else {
+                console.log(`${gedrueckteSpielerID} ${gedrueckteFigurID} ${gedruecktePosition}`);
+                console.log("Änderung wird geprüft!");
+            }
+        }, 2000);
+    });
+}
+
+async function pruefeAenderungFigurAuswahl() {
+    return await warteAufAenderung();
+    console.log("Funktion preufeAenderungFigurAuswahl");
+    // Führen Sie hier weitere Aktionen aus, nachdem die Änderung erkannt wurde
+    //return true;
+}
+*/
 
 //wechselt den aktuellen Spieler
 function wechsleSpieler() {
