@@ -258,7 +258,7 @@ function gibSpielerFarbe(id) {
     }
 }
 
-function spielzugAusfuehren() {
+async function spielzugAusfuehren() {
     const aktiverSpieler = spielerListe[aktuellerSpielerID];
     let darfErneutWuerfeln = false;
     const wurfErgebnis = wuerfeln();
@@ -270,7 +270,8 @@ function spielzugAusfuehren() {
         if (pruefungSpielFeldBesetzt(indexAnkunftsFeld)) {
             if (pruefungBesetztEigenerSpieler(indexAnkunftsFeld)) {
                 console.log(`Ungültiger Zug, bitte eine andere Figur auswählen!`);
-                //Hier noch anpassen neue Spielfigur auswählen
+                await spielFigurAuswaehlen(wurfErgebnis);
+                spielFigurAuswahlZuruecksetzen();
             }
             else {
                 figurSchlagen(indexAnkunftsFeld);
@@ -325,10 +326,9 @@ function spielzugAusfuehren() {
         else {
             //wenn 1-5 gewürfelt wird
             if (wurfErgebnis < 6) {
-                // Hier muss noch die Figur ausgewählt werden!
-                spielFigurAuswaehlen(wurfErgebnis);
+                await spielFigurAuswaehlen(wurfErgebnis);
                 spielFigurAuswahlZuruecksetzen();
-                
+
             }
             //wenn eine 6 gewürfelt wird
             else {
@@ -346,7 +346,8 @@ function spielzugAusfuehren() {
                             if (pruefungSpielFeldBesetzt(indexAnkunftsFeld)) {
                                 if (pruefungBesetztEigenerSpieler(indexAnkunftsFeld)) {
                                     console.log(`Ungültiger Zug, bitte eine andere Figur auswählen!`);
-                                    //Hier noch anpassen neue Spielfigur auswählen  
+                                    await spielFigurAuswaehlen(wurfErgebnis);
+                                    spielFigurAuswahlZuruecksetzen();
                                 }
                                 else {
                                     console.log("Spielfeld besetzt");
@@ -370,7 +371,8 @@ function spielzugAusfuehren() {
                 }
                 //Wenn kein Spieler im heimfeld ist
                 else {
-                    //Figur für Zug auswählen
+                    await spielFigurAuswaehlen(wurfErgebnis);
+                    spielFigurAuswahlZuruecksetzen();
                 }
             }
         }
@@ -413,12 +415,14 @@ async function spielFigurAuswaehlen(wurfErgebnis) {
     console.log(aktuellerSpielerID);
     if (figurGeaendert) {
         console.log(`Funktion pruefeAenderungFigurAuswahl ${gedrueckteSpielerID}    ${aktuellerSpielerID}`);
-        if (gedrueckteSpielerID === aktuellerSpielerID-1) {
+        //Prüfung ob der Spieler seine eigenen Figur ausgewählt hat
+        if (gedrueckteSpielerID === aktuellerSpielerID) {
             console.log("gedrueckteSpielerID === aktuellerSpielerID");
             const indexAnkunftsFeld = ankunftsSpielFeldBerechnen(gedruecktePosition, wurfErgebnis);
             if (pruefungSpielFeldBesetzt(indexAnkunftsFeld)) {
                 if (pruefungBesetztEigenerSpieler(indexAnkunftsFeld)) {
-                    //andere Figur auswählen
+                    await spielFigurAuswaehlen(wurfErgebnis);
+                    spielFigurAuswahlZuruecksetzen();
                     console.log("andere Spielfigur auswählen");
                 } else {
                     console.log("Spielfeld besetzt");
@@ -430,19 +434,13 @@ async function spielFigurAuswaehlen(wurfErgebnis) {
                 spielerListe[gedrueckteSpielerID].spielFiguren[gedrueckteFigurID] += wurfErgebnis;
                 renderSpielbrett();
             }
-        } 
-        else {
-            console.log("Ich bin else innen")
-            /*
-            pruefeAenderungFigurAuswahl();
-            console.log("Ungültige Figurauswahl");
-            // Hier muss eine neue Figur ausgewählt werden
-            */
-            return;
         }
-    }
-    else{
-        console.log("Hier bin ich else außen");
+        //Spieler hat eine falsche Figur ausgewählt
+        else {
+            console.log("Ungültige Figurauswahl");
+            spielFigurAuswahlZuruecksetzen();
+            await spielFigurAuswaehlen();
+        }
     }
 }
 
@@ -469,7 +467,7 @@ function warteAufAenderung() {
                 console.log(`${gedrueckteSpielerID} ${gedrueckteFigurID} ${gedruecktePosition}`);
                 console.log("Änderung wird geprüft!");
             }
-        }, 7000);
+        }, 1000);
     });
 }
 
