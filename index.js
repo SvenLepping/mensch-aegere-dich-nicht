@@ -11,7 +11,7 @@ const spielerListe = [{
     //Laufbahnindex der Spielfigur
     //-1 = auf Heimfeld
     //40-43 Zielfeld
-    spielFiguren: [15, 17, 23, 32],
+    spielFiguren: [-1, -1, -1, -1],
 }, {
     id: 1,
     spielFiguren: [-1, -1, -1, -1],
@@ -20,7 +20,7 @@ const spielerListe = [{
     spielFiguren: [-1, -1, -1, -1],
 }, {
     id: 3,
-    spielFiguren: [-1, -1, -1, -1],
+    spielFiguren: [40, 41, 9, 43],
 }]
 
 // Array der Größe 52 wird erstellt und mit null initialisiert
@@ -413,34 +413,50 @@ async function spielFigurAuswaehlen(wurfErgebnis) {
     let figurGeaendert = await pruefungAenderungFigurAuswahl();
     console.log(figurGeaendert);
     console.log(aktuellerSpielerID);
+    console.log(gedrueckteSpielerID,gedrueckteFigurID,gedruecktePosition);
+    console.log(wurfErgebnis);
     if (figurGeaendert) {
         console.log(`Funktion pruefeAenderungFigurAuswahl ${gedrueckteSpielerID}    ${aktuellerSpielerID}`);
         //Prüfung ob der Spieler seine eigenen Figur ausgewählt hat
         if (gedrueckteSpielerID === aktuellerSpielerID) {
             console.log("gedrueckteSpielerID === aktuellerSpielerID");
-            const indexAnkunftsFeld = ankunftsSpielFeldBerechnen(gedruecktePosition, wurfErgebnis);
-            if (pruefungSpielFeldBesetzt(indexAnkunftsFeld)) {
-                if (pruefungBesetztEigenerSpieler(indexAnkunftsFeld)) {
-                    await spielFigurAuswaehlen(wurfErgebnis);
-                    spielFigurAuswahlZuruecksetzen();
-                    console.log("andere Spielfigur auswählen");
+            console.log(gedrueckteSpielerID,gedrueckteFigurID,gedruecktePosition);
+            console.log(wurfErgebnis);
+            //Funktion Ankunftseld berechnen funktioniert hier nicht, gedruecktePosition wird dann als Nan übergeben?!
+            const indexAnkunftsFeld = ankunftsSpielFeldBerechnen(gedruecktePosition,wurfErgebnis);
+            console.log("Ankunftsfeld", indexAnkunftsFeld);
+            if (indexAnkunftsFeld <= 43) {
+                if (pruefungSpielFeldBesetzt(indexAnkunftsFeld)) {
+                    if (pruefungBesetztEigenerSpieler(indexAnkunftsFeld)) {
+                        await spielFigurAuswaehlen(wurfErgebnis);
+                        spielFigurAuswahlZuruecksetzen();
+                        console.log("andere Spielfigur auswählen");
+                    } else {
+                        console.log("Spielfeld besetzt");
+                        figurSchlagen(indexAnkunftsFeld);
+                        spielerListe[gedrueckteSpielerID].spielFiguren[gedrueckteFigurID] += wurfErgebnis;
+                        renderSpielbrett();
+                    }
                 } else {
-                    console.log("Spielfeld besetzt");
-                    figurSchlagen(indexAnkunftsFeld);
+                    console.log("Ausgewählte Figur setzen");
                     spielerListe[gedrueckteSpielerID].spielFiguren[gedrueckteFigurID] += wurfErgebnis;
                     renderSpielbrett();
                 }
-            } else {
-                console.log("Ausgewählte Figur setzen");
-                spielerListe[gedrueckteSpielerID].spielFiguren[gedrueckteFigurID] += wurfErgebnis;
-                renderSpielbrett();
+            }
+            //Wenn Figur über den Wert 43 gesetzt wird (außerhalb der wählbaren Felder), andere Figur wählen
+            else {
+                console.log("Ungültige Figurauswahl");
+                spielFigurAuswahlZuruecksetzen();
+                await spielFigurAuswaehlen(wurfErgebnis);
+                return;
             }
         }
         //Spieler hat eine falsche Figur ausgewählt
         else {
             console.log("Ungültige Figurauswahl");
             spielFigurAuswahlZuruecksetzen();
-            await spielFigurAuswaehlen();
+            await spielFigurAuswaehlen(wurfErgebnis);
+            return;
         }
     }
 }
