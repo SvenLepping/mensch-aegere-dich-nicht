@@ -11,10 +11,10 @@ const spielerListe = [{
     //Laufbahnindex der Spielfigur
     //-1 = auf Heimfeld
     //40-43 Zielfeld
-    spielFiguren: [0, 12, 13, 14],
+    spielFiguren: [-1, -1, -1, -1],
 }, {
     id: 1,
-    spielFiguren: [-1,-1, -1, -1],
+    spielFiguren: [-1, -1, -1, -1],
 }, {
     id: 2,
     spielFiguren: [-1, -1, -1, -1],
@@ -278,7 +278,7 @@ async function spielzugAusfuehren() {
                 aktiverSpieler.spielFiguren[indexFigurStartfeld] = wertAnkunftsFeld;
             }
         } else {
-            aktiverSpieler.spielFiguren[indexFigurStartfeld] =wertAnkunftsFeld;
+            aktiverSpieler.spielFiguren[indexFigurStartfeld] = wertAnkunftsFeld;
         }
 
         if (wurfErgebnis === 6) {
@@ -424,7 +424,7 @@ async function spielFigurAuswaehlenUndSetzen(wurfErgebnis) {
             console.log("Ankunftsfeld", wertAnkunftsFeld);
             if (wertAnkunftsFeld <= 43) {
                 if (pruefungSpielFeldBesetzt(wertAnkunftsFeld)) {
-                    if (pruefungBesetztEigenerSpieler(wertAnkunftsFeld )) {
+                    if (pruefungBesetztEigenerSpieler(wertAnkunftsFeld)) {
                         await spielFigurAuswaehlenUndSetzen(wurfErgebnis);
                         spielFigurAuswahlZuruecksetzen();
                         console.log("andere Spielfigur auswählen");
@@ -611,90 +611,87 @@ function ankunftsSpielFeldBerechnen(indexAktuellesFeld, wurfZahl) {
     const erstesFeld = 0;
 
     //Spieler Rot
-    if(aktuellerSpielerID === 0){
+    if (aktuellerSpielerID === 0) {
         return indexAktuellesFeld + wurfZahl;
     }
     // Spieler Blau
-    if(aktuellerSpielerID === 1){
+    if (aktuellerSpielerID === 1) {
         const feldVorZielfelder = 9;
         const startFeldSpieler = 10;
         let ankunftsFeldTheoretisch = indexAktuellesFeld + wurfZahl;
         let ankunftsFeldSpieler1 = null;
         // wenn die Felder zwischen Startfeld blau und dem Feld 39 liegen und nachher 39 überschreiten und auf Felder 0-9 gehen
-        if(ankunftsFeldTheoretisch > letztesFeld && indexAktuellesFeld >= startFeldSpieler){
-            ankunftsFeldSpieler1 = ankunftsFeldTheoretisch -40;
+        if (ankunftsFeldTheoretisch > letztesFeld && indexAktuellesFeld >= startFeldSpieler) {
+            ankunftsFeldSpieler1 = ankunftsFeldTheoretisch - 40;
             return ankunftsFeldSpieler1;
         }
         //Spieler bleibt unter Felder oder gleich Feld 39 und steht zwischen 10 und 39
-        if(ankunftsFeldTheoretisch <= letztesFeld && indexAktuellesFeld>= startFeldSpieler ){
-            ankunftsFeldSpieler1 =  ankunftsFeldTheoretisch;
+        if (ankunftsFeldTheoretisch <= letztesFeld && indexAktuellesFeld >= startFeldSpieler) {
+            ankunftsFeldSpieler1 = ankunftsFeldTheoretisch;
             return ankunftsFeldSpieler1;
         }
         //Spieler steht zwischen 0 und 10 und bleibt auch dazwischen
-        if(ankunftsFeldTheoretisch <= feldVorZielfelder && indexAktuellesFeld >= erstesFeld){
+        if (ankunftsFeldTheoretisch <= feldVorZielfelder && indexAktuellesFeld >= erstesFeld) {
             ankunftsFeldSpieler1 = ankunftsFeldTheoretisch;
             return ankunftsFeldSpieler1;
         }
         //Spieler gehen ins Zielfeld
-        if(ankunftsFeldTheoretisch >= startFeldSpieler && ankunftsFeldTheoretisch <= 15 && indexAktuellesFeld < startFeldSpieler && indexAktuellesFeld>= erstesFeld)
-        {
+        if (ankunftsFeldTheoretisch >= startFeldSpieler && ankunftsFeldTheoretisch <= 15 && indexAktuellesFeld < startFeldSpieler && indexAktuellesFeld >= erstesFeld) {
             ankunftsFeldSpieler1 = ankunftsFeldTheoretisch + 30;
             return ankunftsFeldSpieler1;
         }
-        
+
     }
     //Spieler Gelb
-    if(aktuellerSpielerID === 2){
+    if (aktuellerSpielerID === 2) {
         const feldVorZielfelder = 19;
         const startFeldSpieler = 20;
         let ankunftsFeldTheoretisch = indexAktuellesFeld + wurfZahl;
         let ankunftsFeldSpieler2 = null;
         // wenn die Felder zwischen Startfeld gelb und dem Feld 39 liegen und nachher 39 überschreiten und auf Felder 0-19 gehen
-        if(ankunftsFeldTheoretisch > letztesFeld && indexAktuellesFeld >= startFeldSpieler){
-            ankunftsFeldSpieler2 = ankunftsFeldTheoretisch -40;
+        if (ankunftsFeldTheoretisch > letztesFeld && indexAktuellesFeld >= startFeldSpieler) {
+            ankunftsFeldSpieler2 = ankunftsFeldTheoretisch - 40;
             return ankunftsFeldSpieler2;
         }
         //Spieler bleibt unter Felder oder gleich Feld 39 und steht zwischen 20 und 39
-        if(ankunftsFeldTheoretisch <= letztesFeld && indexAktuellesFeld>= startFeldSpieler ){
-            ankunftsFeldSpieler2 =  ankunftsFeldTheoretisch;
+        if (ankunftsFeldTheoretisch <= letztesFeld && indexAktuellesFeld >= startFeldSpieler) {
+            ankunftsFeldSpieler2 = ankunftsFeldTheoretisch;
             return ankunftsFeldSpieler2;
         }
         //Spieler steht zwischen 0 und 19 und bleibt auch dazwischen
-        if(ankunftsFeldTheoretisch <= feldVorZielfelder && indexAktuellesFeld >= erstesFeld){
+        if (ankunftsFeldTheoretisch <= feldVorZielfelder && indexAktuellesFeld >= erstesFeld) {
             ankunftsFeldSpieler2 = ankunftsFeldTheoretisch;
             return ankunftsFeldSpieler2;
         }
         //Spieler gehen ins Zielfeld
-        if(ankunftsFeldTheoretisch >= startFeldSpieler && ankunftsFeldTheoretisch <= 25 && indexAktuellesFeld < startFeldSpieler && indexAktuellesFeld>= erstesFeld)
-        {
+        if (ankunftsFeldTheoretisch >= startFeldSpieler && ankunftsFeldTheoretisch <= 25 && indexAktuellesFeld < startFeldSpieler && indexAktuellesFeld >= erstesFeld) {
             ankunftsFeldSpieler2 = ankunftsFeldTheoretisch + 20;
             return ankunftsFeldSpieler2;
         }
     }
     //Spieler Grün
-    if(aktuellerSpielerID === 3){
+    if (aktuellerSpielerID === 3) {
         const feldVorZielfelder = 29;
         const startFeldSpieler = 30;
         let ankunftsFeldTheoretisch = indexAktuellesFeld + wurfZahl;
         let ankunftsFeldSpieler3 = null;
         // wenn die Felder zwischen Startfeld Grün und dem Feld 39 liegen und nachher 39 überschreiten und auf Felder 0-29 gehen
-        if(ankunftsFeldTheoretisch > letztesFeld && indexAktuellesFeld >= startFeldSpieler){
-            ankunftsFeldSpieler3 = ankunftsFeldTheoretisch -40;
+        if (ankunftsFeldTheoretisch > letztesFeld && indexAktuellesFeld >= startFeldSpieler) {
+            ankunftsFeldSpieler3 = ankunftsFeldTheoretisch - 40;
             return ankunftsFeldSpieler3;
         }
         //Spieler bleibt unter Felder oder gleich Feld 39 und steht zwischen 30 und 39
-        if(ankunftsFeldTheoretisch <= letztesFeld && indexAktuellesFeld>= startFeldSpieler ){
-            ankunftsFeldSpieler3 =  ankunftsFeldTheoretisch;
+        if (ankunftsFeldTheoretisch <= letztesFeld && indexAktuellesFeld >= startFeldSpieler) {
+            ankunftsFeldSpieler3 = ankunftsFeldTheoretisch;
             return ankunftsFeldSpieler3;
         }
         //Spieler steht zwischen 0 und 29 und bleibt auch dazwischen
-        if(ankunftsFeldTheoretisch <= feldVorZielfelder && indexAktuellesFeld >= erstesFeld){
+        if (ankunftsFeldTheoretisch <= feldVorZielfelder && indexAktuellesFeld >= erstesFeld) {
             ankunftsFeldSpieler3 = ankunftsFeldTheoretisch;
             return ankunftsFeldSpieler3;
         }
         //Spieler gehen ins Zielfeld
-        if(ankunftsFeldTheoretisch >= startFeldSpieler && ankunftsFeldTheoretisch <= 35 && indexAktuellesFeld < startFeldSpieler && indexAktuellesFeld>= erstesFeld)
-        {
+        if (ankunftsFeldTheoretisch >= startFeldSpieler && ankunftsFeldTheoretisch <= 35 && indexAktuellesFeld < startFeldSpieler && indexAktuellesFeld >= erstesFeld) {
             ankunftsFeldSpieler3 = ankunftsFeldTheoretisch + 10;
             return ankunftsFeldSpieler3;
         }
