@@ -7,6 +7,20 @@ Fragen:
 -Live-Demo zeigen Anpassungen?
 -Nur ein Spieler gewinnt, dann Spiel vorbei? Laut Anleitung ja, also für Programmierung auch okay?
 
+ToDo:
+
+-Würfel Optisch Anpassungen
+-Alert bei Spieler wechsel (Farbe des Spieler angeben "Spieler XXX ist am Zug")
+-Alert Würfeln ändern (Spieler Gelb hat eine 6 gewürfelt)
+-Zielfelder anpassen
+    -Beispiel Fehler:
+        -Blaue Figur von Zielfeld 41 mit gewürfelter 1 auf Feld 2 gesetzt
+        -Blaue Figur von Zielfeld 41 mit gewürfelter 2 auf Feld 3 gesetzt
+        &&
+        -Rote Figur von Feld 3(?! oder anderes Feld) auf 43 gesprungen mit Wurfzahl 1?!
+        &&
+        -Figuren rot auf Zielfelder 40,41,42, 42 mit Wurfzahl angeklickt, Figuren auf 41,42,43
+
 
 
 

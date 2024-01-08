@@ -415,7 +415,7 @@ async function spielFigurAuswaehlenUndSetzen(wurfErgebnis) {
     if (figurGeaendert) {
         console.log(`Funktion pruefeAenderungFigurAuswahl ${gedrueckteSpielerID}    ${aktuellerSpielerID}`);
         //Prüfung ob der Spieler seine eigenen Figur ausgewählt hat
-        if (gedrueckteSpielerID === aktuellerSpielerID) {
+        if (gedrueckteSpielerID === aktuellerSpielerID && gedruecktePosition != -1) {
             console.log("gedrueckteSpielerID === aktuellerSpielerID");
             console.log(gedrueckteSpielerID, gedrueckteFigurID, gedruecktePosition);
             console.log(wurfErgebnis);
