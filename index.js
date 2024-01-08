@@ -11,16 +11,16 @@ const spielerListe = [{
     //Laufbahnindex der Spielfigur
     //-1 = auf Heimfeld
     //40-43 Zielfeld
-    spielFiguren: [-1, -1, -1, -1],
+    spielFiguren: [0, 12, 13, 14],
 }, {
     id: 1,
-    spielFiguren: [-1, -1, -1, -1],
+    spielFiguren: [-1,-1, -1, -1],
 }, {
     id: 2,
     spielFiguren: [-1, -1, -1, -1],
 }, {
     id: 3,
-    spielFiguren: [40, 41, 9, 43],
+    spielFiguren: [-1, -1, -1, -1],
 }]
 
 // Array der Größe 52 wird erstellt und mit null initialisiert
@@ -262,23 +262,23 @@ async function spielzugAusfuehren() {
     const aktiverSpieler = spielerListe[aktuellerSpielerID];
     let darfErneutWuerfeln = false;
     const wurfErgebnis = wuerfeln();
-    //Prüfung ob Startfeld mit eigenem Spieler besetzt ist
-    if (pruefungSpielFeldBesetzt(aktuellerSpielerID * 10) && pruefungBesetztEigenerSpieler(aktuellerSpielerID * 10)) {
+    //Prüfung ob Startfeld mit eigenem Spieler besetzt ist und keiner im Heimfeld
+    if (pruefungSpielFeldBesetzt(aktuellerSpielerID * 10) && pruefungBesetztEigenerSpieler(aktuellerSpielerID * 10) && minEinSpielerHeimfeld() === true) {
         const indexFigurStartfeld = indexEigeneFigurStartFeld();
-        const indexAnkunftsFeld = ankunftsSpielFeldBerechnen(aktuellerSpielerID * 10, wurfErgebnis);
+        const wertAnkunftsFeld = ankunftsSpielFeldBerechnen(aktuellerSpielerID * 10, wurfErgebnis);
 
-        if (pruefungSpielFeldBesetzt(indexAnkunftsFeld)) {
-            if (pruefungBesetztEigenerSpieler(indexAnkunftsFeld)) {
+        if (pruefungSpielFeldBesetzt(wertAnkunftsFeld)) {
+            if (pruefungBesetztEigenerSpieler(wertAnkunftsFeld)) {
                 console.log(`Ungültiger Zug, bitte eine andere Figur auswählen!`);
-                await spielFigurAuswaehlen(wurfErgebnis);
+                await spielFigurAuswaehlenUndSetzen(wurfErgebnis);
                 spielFigurAuswahlZuruecksetzen();
             }
             else {
-                figurSchlagen(indexAnkunftsFeld);
-                aktiverSpieler.spielFiguren[indexFigurStartfeld] += wurfErgebnis;
+                figurSchlagen(wertAnkunftsFeld);
+                aktiverSpieler.spielFiguren[indexFigurStartfeld] = wertAnkunftsFeld;
             }
         } else {
-            aktiverSpieler.spielFiguren[indexFigurStartfeld] += wurfErgebnis;
+            aktiverSpieler.spielFiguren[indexFigurStartfeld] =wertAnkunftsFeld;
         }
 
         if (wurfErgebnis === 6) {
@@ -325,7 +325,7 @@ async function spielzugAusfuehren() {
         else {
             //wenn 1-5 gewürfelt wird
             if (wurfErgebnis < 6) {
-                await spielFigurAuswaehlen(wurfErgebnis);
+                await spielFigurAuswaehlenUndSetzen(wurfErgebnis);
                 spielFigurAuswahlZuruecksetzen();
 
             }
@@ -336,25 +336,25 @@ async function spielzugAusfuehren() {
                 if (minEinSpielerHeimfeld()) {
                     const ersterSpielerImHeimfeld = erstenHeimFeldSpielerSuchen(aktiverSpieler.spielFiguren);
                     let startFeldSpieler = aktuellerSpielerID * 10;
-                    const indexAnkunftsFeld = ankunftsSpielFeldBerechnen(startFeldSpieler, wurfErgebnis);
+                    const wertAnkunftsFeld = ankunftsSpielFeldBerechnen(startFeldSpieler, wurfErgebnis);
                     //Prüfung ob das Startfeld besetzt ist
                     if (pruefungSpielFeldBesetzt(startFeldSpieler)) {
                         //besetzt durch eigenen Spieler
                         if (pruefungBesetztEigenerSpieler(startFeldSpieler)) {
                             //Prüfung ob Ankunftsspielfeld besetzt ist wenn Spielfigur von Startfeld weitergesetzt wird
-                            if (pruefungSpielFeldBesetzt(indexAnkunftsFeld)) {
-                                if (pruefungBesetztEigenerSpieler(indexAnkunftsFeld)) {
+                            if (pruefungSpielFeldBesetzt(wertAnkunftsFeld)) {
+                                if (pruefungBesetztEigenerSpieler(wertAnkunftsFeld)) {
                                     console.log(`Ungültiger Zug, bitte eine andere Figur auswählen!`);
-                                    await spielFigurAuswaehlen(wurfErgebnis);
+                                    await spielFigurAuswaehlenUndSetzen(wurfErgebnis);
                                     spielFigurAuswahlZuruecksetzen();
                                 }
                                 else {
-                                    figurSchlagen(indexAnkunftsFeld);
-                                    aktiverSpieler.spielFiguren[indexEigeneFigurStartFeld()] += wurfErgebnis;
+                                    figurSchlagen(wertAnkunftsFeld);
+                                    aktiverSpieler.spielFiguren[indexEigeneFigurStartFeld()] = wertAnkunftsFeld;
 
                                 }
                             } else {
-                                aktiverSpieler.spielFiguren[indexEigeneFigurStartFeld()] += wurfErgebnis;
+                                aktiverSpieler.spielFiguren[indexEigeneFigurStartFeld()] = wertAnkunftsFeld;
                             }
                         }
                         else {
@@ -368,7 +368,7 @@ async function spielzugAusfuehren() {
                 }
                 //Wenn kein Spieler im heimfeld ist und eine 6 gewürfelt
                 else {
-                    await spielFigurAuswaehlen(wurfErgebnis);
+                    await spielFigurAuswaehlenUndSetzen(wurfErgebnis);
                     spielFigurAuswahlZuruecksetzen();
                 }
             }
@@ -406,7 +406,7 @@ function spielFigurGedrueckt(spielerID, figurID, position) {
     console.log("Spielfigur gedrückt", spielerID, figurID, position);
 }
 
-async function spielFigurAuswaehlen(wurfErgebnis) {
+async function spielFigurAuswaehlenUndSetzen(wurfErgebnis) {
     let figurGeaendert = await pruefungAenderungFigurAuswahl();
     console.log(figurGeaendert);
     console.log(aktuellerSpielerID);
@@ -420,22 +420,22 @@ async function spielFigurAuswaehlen(wurfErgebnis) {
             console.log(gedrueckteSpielerID, gedrueckteFigurID, gedruecktePosition);
             console.log(wurfErgebnis);
             //Funktion Ankunftseld berechnen funktioniert hier nicht, gedruecktePosition wird dann als Nan übergeben?!
-            const indexAnkunftsFeld = ankunftsSpielFeldBerechnen(gedruecktePosition, wurfErgebnis);
-            console.log("Ankunftsfeld", indexAnkunftsFeld);
-            if (indexAnkunftsFeld <= 43) {
-                if (pruefungSpielFeldBesetzt(indexAnkunftsFeld)) {
-                    if (pruefungBesetztEigenerSpieler(indexAnkunftsFeld)) {
-                        await spielFigurAuswaehlen(wurfErgebnis);
+            const wertAnkunftsFeld = ankunftsSpielFeldBerechnen(gedruecktePosition, wurfErgebnis);
+            console.log("Ankunftsfeld", wertAnkunftsFeld);
+            if (wertAnkunftsFeld <= 43) {
+                if (pruefungSpielFeldBesetzt(wertAnkunftsFeld)) {
+                    if (pruefungBesetztEigenerSpieler(wertAnkunftsFeld )) {
+                        await spielFigurAuswaehlenUndSetzen(wurfErgebnis);
                         spielFigurAuswahlZuruecksetzen();
                         console.log("andere Spielfigur auswählen");
                     } else {
-                        figurSchlagen(indexAnkunftsFeld);
-                        spielerListe[gedrueckteSpielerID].spielFiguren[gedrueckteFigurID] += wurfErgebnis;
+                        figurSchlagen(wertAnkunftsFeld);
+                        spielerListe[gedrueckteSpielerID].spielFiguren[gedrueckteFigurID] = wertAnkunftsFeld;
                         renderSpielbrett();
                     }
                 } else {
                     console.log("Ausgewählte Figur setzen");
-                    spielerListe[gedrueckteSpielerID].spielFiguren[gedrueckteFigurID] += wurfErgebnis;
+                    spielerListe[gedrueckteSpielerID].spielFiguren[gedrueckteFigurID] = wertAnkunftsFeld;
                     renderSpielbrett();
                 }
             }
@@ -443,7 +443,7 @@ async function spielFigurAuswaehlen(wurfErgebnis) {
             else {
                 console.log("Ungültige Figurauswahl");
                 spielFigurAuswahlZuruecksetzen();
-                await spielFigurAuswaehlen(wurfErgebnis);
+                await spielFigurAuswaehlenUndSetzen(wurfErgebnis);
                 return;
             }
         }
@@ -451,7 +451,7 @@ async function spielFigurAuswaehlen(wurfErgebnis) {
         else {
             console.log("Ungültige Figurauswahl");
             spielFigurAuswahlZuruecksetzen();
-            await spielFigurAuswaehlen(wurfErgebnis);
+            await spielFigurAuswaehlenUndSetzen(wurfErgebnis);
             return;
         }
     }
@@ -607,8 +607,100 @@ function erstenHeimFeldSpielerSuchen(spielerListe) {
     }
 }
 function ankunftsSpielFeldBerechnen(indexAktuellesFeld, wurfZahl) {
-    return indexAktuellesFeld + wurfZahl;
+    const letztesFeld = 39;
+    const erstesFeld = 0;
+
+    //Spieler Rot
+    if(aktuellerSpielerID === 0){
+        return indexAktuellesFeld + wurfZahl;
+    }
+    // Spieler Blau
+    if(aktuellerSpielerID === 1){
+        const feldVorZielfelder = 9;
+        const startFeldSpieler = 10;
+        let ankunftsFeldTheoretisch = indexAktuellesFeld + wurfZahl;
+        let ankunftsFeldSpieler1 = null;
+        // wenn die Felder zwischen Startfeld blau und dem Feld 39 liegen und nachher 39 überschreiten und auf Felder 0-9 gehen
+        if(ankunftsFeldTheoretisch > letztesFeld && indexAktuellesFeld >= startFeldSpieler){
+            ankunftsFeldSpieler1 = ankunftsFeldTheoretisch -40;
+            return ankunftsFeldSpieler1;
+        }
+        //Spieler bleibt unter Felder oder gleich Feld 39 und steht zwischen 10 und 39
+        if(ankunftsFeldTheoretisch <= letztesFeld && indexAktuellesFeld>= startFeldSpieler ){
+            ankunftsFeldSpieler1 =  ankunftsFeldTheoretisch;
+            return ankunftsFeldSpieler1;
+        }
+        //Spieler steht zwischen 0 und 10 und bleibt auch dazwischen
+        if(ankunftsFeldTheoretisch <= feldVorZielfelder && indexAktuellesFeld >= erstesFeld){
+            ankunftsFeldSpieler1 = ankunftsFeldTheoretisch;
+            return ankunftsFeldSpieler1;
+        }
+        //Spieler gehen ins Zielfeld
+        if(ankunftsFeldTheoretisch >= startFeldSpieler && ankunftsFeldTheoretisch <= 15 && indexAktuellesFeld < startFeldSpieler && indexAktuellesFeld>= erstesFeld)
+        {
+            ankunftsFeldSpieler1 = ankunftsFeldTheoretisch + 30;
+            return ankunftsFeldSpieler1;
+        }
+        
+    }
+    //Spieler Gelb
+    if(aktuellerSpielerID === 2){
+        const feldVorZielfelder = 19;
+        const startFeldSpieler = 20;
+        let ankunftsFeldTheoretisch = indexAktuellesFeld + wurfZahl;
+        let ankunftsFeldSpieler2 = null;
+        // wenn die Felder zwischen Startfeld gelb und dem Feld 39 liegen und nachher 39 überschreiten und auf Felder 0-19 gehen
+        if(ankunftsFeldTheoretisch > letztesFeld && indexAktuellesFeld >= startFeldSpieler){
+            ankunftsFeldSpieler2 = ankunftsFeldTheoretisch -40;
+            return ankunftsFeldSpieler2;
+        }
+        //Spieler bleibt unter Felder oder gleich Feld 39 und steht zwischen 20 und 39
+        if(ankunftsFeldTheoretisch <= letztesFeld && indexAktuellesFeld>= startFeldSpieler ){
+            ankunftsFeldSpieler2 =  ankunftsFeldTheoretisch;
+            return ankunftsFeldSpieler2;
+        }
+        //Spieler steht zwischen 0 und 19 und bleibt auch dazwischen
+        if(ankunftsFeldTheoretisch <= feldVorZielfelder && indexAktuellesFeld >= erstesFeld){
+            ankunftsFeldSpieler2 = ankunftsFeldTheoretisch;
+            return ankunftsFeldSpieler2;
+        }
+        //Spieler gehen ins Zielfeld
+        if(ankunftsFeldTheoretisch >= startFeldSpieler && ankunftsFeldTheoretisch <= 25 && indexAktuellesFeld < startFeldSpieler && indexAktuellesFeld>= erstesFeld)
+        {
+            ankunftsFeldSpieler2 = ankunftsFeldTheoretisch + 20;
+            return ankunftsFeldSpieler2;
+        }
+    }
+    //Spieler Grün
+    if(aktuellerSpielerID === 3){
+        const feldVorZielfelder = 29;
+        const startFeldSpieler = 30;
+        let ankunftsFeldTheoretisch = indexAktuellesFeld + wurfZahl;
+        let ankunftsFeldSpieler3 = null;
+        // wenn die Felder zwischen Startfeld Grün und dem Feld 39 liegen und nachher 39 überschreiten und auf Felder 0-29 gehen
+        if(ankunftsFeldTheoretisch > letztesFeld && indexAktuellesFeld >= startFeldSpieler){
+            ankunftsFeldSpieler3 = ankunftsFeldTheoretisch -40;
+            return ankunftsFeldSpieler3;
+        }
+        //Spieler bleibt unter Felder oder gleich Feld 39 und steht zwischen 30 und 39
+        if(ankunftsFeldTheoretisch <= letztesFeld && indexAktuellesFeld>= startFeldSpieler ){
+            ankunftsFeldSpieler3 =  ankunftsFeldTheoretisch;
+            return ankunftsFeldSpieler3;
+        }
+        //Spieler steht zwischen 0 und 29 und bleibt auch dazwischen
+        if(ankunftsFeldTheoretisch <= feldVorZielfelder && indexAktuellesFeld >= erstesFeld){
+            ankunftsFeldSpieler3 = ankunftsFeldTheoretisch;
+            return ankunftsFeldSpieler3;
+        }
+        //Spieler gehen ins Zielfeld
+        if(ankunftsFeldTheoretisch >= startFeldSpieler && ankunftsFeldTheoretisch <= 35 && indexAktuellesFeld < startFeldSpieler && indexAktuellesFeld>= erstesFeld)
+        {
+            ankunftsFeldSpieler3 = ankunftsFeldTheoretisch + 10;
+            return ankunftsFeldSpieler3;
+        }
+    }
 }
+
 function pruefungSpielFeldBesetzt(feldIndex) {
     return spielerListe[0].spielFiguren.includes(feldIndex) ||
         spielerListe[1].spielFiguren.includes(feldIndex) ||
