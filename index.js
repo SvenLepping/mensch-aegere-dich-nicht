@@ -11,7 +11,7 @@ const spielerListe = [{
     //Laufbahnindex der Spielfigur
     //-1 = auf Heimfeld
     //40-43 Zielfeld
-    spielFiguren: [-1, -1, -1, -1],
+    spielFiguren: [15, 17, 23, 32],
 }, {
     id: 1,
     spielFiguren: [-1, -1, -1, -1],
@@ -334,7 +334,7 @@ async function spielzugAusfuehren() {
             else {
                 darfErneutWuerfeln = true;
                 //Prüfung ob noch ein Spieler im Heimfeld ist
-                if (minEinSpielerHeimfeld) {
+                if (minEinSpielerHeimfeld()) {
                     const ersterSpielerImHeimfeld = erstenHeimFeldSpielerSuchen(aktiverSpieler.spielFiguren);
                     let startFeldSpieler = aktuellerSpielerID * 10;
                     const indexAnkunftsFeld = ankunftsSpielFeldBerechnen(startFeldSpieler, wurfErgebnis);
@@ -369,7 +369,7 @@ async function spielzugAusfuehren() {
                         figurStartfeld(aktiverSpieler, ersterSpielerImHeimfeld);
                     }
                 }
-                //Wenn kein Spieler im heimfeld ist
+                //Wenn kein Spieler im heimfeld ist und eine 6 gewürfelt
                 else {
                     await spielFigurAuswaehlen(wurfErgebnis);
                     spielFigurAuswahlZuruecksetzen();
@@ -428,6 +428,7 @@ async function spielFigurAuswaehlen(wurfErgebnis) {
                     console.log("Spielfeld besetzt");
                     figurSchlagen(indexAnkunftsFeld);
                     spielerListe[gedrueckteSpielerID].spielFiguren[gedrueckteFigurID] += wurfErgebnis;
+                    renderSpielbrett();
                 }
             } else {
                 console.log("Ausgewählte Figur setzen");
