@@ -325,11 +325,10 @@ function spielzugAusfuehren() {
         else {
             //wenn 1-5 gewürfelt wird
             if (wurfErgebnis < 6) {
-                /* Hier muss noch die Figur ausgewählt werden!
+                // Hier muss noch die Figur ausgewählt werden!
                 spielFigurAuswaehlen(wurfErgebnis);
-                spielerListe[aktuellerSpielerID].spielFiguren(gedrueckteFigurID) += wurfErgebnis;
                 spielFigurAuswahlZuruecksetzen();
-                */
+                
             }
             //wenn eine 6 gewürfelt wird
             else {
@@ -408,12 +407,13 @@ function spielFigurGedrueckt(spielerID, figurID, position) {
     console.log("Spielfigur gedrückt", spielerID, figurID, position);
 }
 
-function spielFigurAuswaehlen(wurfErgebnis) {
-    let figurGeaendert = pruefeAenderungFigurAuswahl();
+async function spielFigurAuswaehlen(wurfErgebnis) {
+    let figurGeaendert = await pruefungAenderungFigurAuswahl();
     console.log(figurGeaendert);
+    console.log(aktuellerSpielerID);
     if (figurGeaendert) {
-        console.log(`Funktion pruefeAenderungFigurAuswahl ${gedrueckteSpielerID}${aktuellerSpielerID}`);
-        if (gedrueckteSpielerID === aktuellerSpielerID) {
+        console.log(`Funktion pruefeAenderungFigurAuswahl ${gedrueckteSpielerID}    ${aktuellerSpielerID}`);
+        if (gedrueckteSpielerID === aktuellerSpielerID-1) {
             console.log("gedrueckteSpielerID === aktuellerSpielerID");
             const indexAnkunftsFeld = ankunftsSpielFeldBerechnen(gedruecktePosition, wurfErgebnis);
             if (pruefungSpielFeldBesetzt(indexAnkunftsFeld)) {
@@ -423,10 +423,12 @@ function spielFigurAuswaehlen(wurfErgebnis) {
                 } else {
                     console.log("Spielfeld besetzt");
                     figurSchlagen(indexAnkunftsFeld);
-                    spielerListe[aktuellerSpielerID].spielFiguren(gedrueckteFigurID) += wurfErgebnis;
+                    spielerListe[gedrueckteSpielerID].spielFiguren[gedrueckteFigurID] += wurfErgebnis;
                 }
             } else {
-                spielerListe[aktuellerSpielerID].spielFiguren(gedrueckteFigurID) += wurfErgebnis;
+                console.log("Ausgewählte Figur setzen");
+                spielerListe[gedrueckteSpielerID].spielFiguren[gedrueckteFigurID] += wurfErgebnis;
+                renderSpielbrett();
             }
         } 
         else {
@@ -449,27 +451,12 @@ function spielFigurAuswahlZuruecksetzen() {
     gedrueckteFigurID = null;
     gedruecktePosition = null;
 }
-/* Chat GPT
-async function pruefeAenderungFigurAuswahl() {
-    await warteAufAenderung();
-    if (gedruecktePosition===null) {
-        pruefeAenderungFigurAuswahl();
-        console.log("Änderung wird geprüft!");
-    } else {
-        return true;
-    }
-}
 
-function warteAufAenderung() {
-    return new Promise(resolve => {
-        setTimeout(()  => {
-            resolve();
-        }, 3000); 
-    });
+async function pruefungAenderungFigurAuswahl() {
+    const result = await warteAufAenderung();
+    console.log("FIGUR AUSGEWÄHLT!");
+    return result;
 }
-*/
-
-/* Chat GPT
 function warteAufAenderung() {
     return new Promise(resolve => {
         const intervalId = setInterval(() => {
@@ -482,17 +469,9 @@ function warteAufAenderung() {
                 console.log(`${gedrueckteSpielerID} ${gedrueckteFigurID} ${gedruecktePosition}`);
                 console.log("Änderung wird geprüft!");
             }
-        }, 2000);
+        }, 7000);
     });
 }
-
-async function pruefeAenderungFigurAuswahl() {
-    return await warteAufAenderung();
-    console.log("Funktion preufeAenderungFigurAuswahl");
-    // Führen Sie hier weitere Aktionen aus, nachdem die Änderung erkannt wurde
-    //return true;
-}
-*/
 
 //wechselt den aktuellen Spieler
 function wechsleSpieler() {
