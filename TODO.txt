@@ -1,7 +1,15 @@
--alle Figuren Heimfeld prüfen
--Zielfelder prüfen/ansteuern
--Spielfiguren schlagen
--Zielfelder nicht doppelt besetzen
--verschiedenen Figuren ziehen
+Fragen:
+-BPMN und EPK zu groß für Seminararbeit, gesondert abgeben?
+-Inwiefern muss der Code beschrieben werden? Hausarbeit und Kommentare
+-Toleranz der Wörteranzahl? +/- 10% ?
+-Fehlversuche mit aufnehmen? EPK, Klassendiagramm?
+-Müssen alle Fehler abgefangen werden? (Bsp. wenn erneut gewürfelt wird, obwohl der Spieler keine Figur ausgewählt hat, erscheint einfach ein neues Würfelergebnis)
+-Live-Demo zeigen Anpassungen?
+-Nur ein Spieler gewinnt, dann Spiel vorbei? Laut Anleitung ja, also für Programmierung auch okay?
+
+
+
+
+
 
 
