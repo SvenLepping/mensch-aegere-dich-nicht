@@ -6,6 +6,7 @@ Fragen:
 -Müssen alle Fehler abgefangen werden? (Bsp. wenn erneut gewürfelt wird, obwohl der Spieler keine Figur ausgewählt hat, erscheint einfach ein neues Würfelergebnis)
 -Live-Demo zeigen Anpassungen?
 -Nur ein Spieler gewinnt, dann Spiel vorbei? Laut Anleitung ja, also für Programmierung auch okay?
+-Optimierungen von Code an machen stellen möglich, aber ist das notwendig?
 
 ToDo:
 
