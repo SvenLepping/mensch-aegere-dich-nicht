@@ -11,16 +11,16 @@ const spielerListe = [{
     //Laufbahnindex der Spielfigur
     //-1 = auf Heimfeld
     //40-43 Zielfeld
-    spielFiguren: [38, 19, 4, 22],
+    spielFiguren: [40, 19, 4, 22],
 }, {
     id: 1,
-    spielFiguren: [8, 27, 14, 32],
+    spielFiguren: [40, 27, 14, 32],
 }, {
     id: 2,
-    spielFiguren: [37, 18, 12, 25],
+    spielFiguren: [40, 18, 12, 25],
 }, {
     id: 3,
-    spielFiguren: [39, 28, 29, 7],
+    spielFiguren: [40, 28, 29, 7],
 }]
 
 // Array der Größe 52 wird erstellt und mit null initialisiert
@@ -59,16 +59,16 @@ function renderSpielbrett() {
                 feld$.className += ' laufbahn';
 
                 if (laufbahnIndex === 0) {
-                    feld$.className += ' basis-rot';
+                    feld$.className += ' basis-Rot';
                 }
                 if (laufbahnIndex === 10) {
-                    feld$.className += ' basis-blau';
+                    feld$.className += ' basis-Blau';
                 }
                 if (laufbahnIndex === 20) {
-                    feld$.className += ' basis-gelb';
+                    feld$.className += ' basis-Gelb';
                 }
                 if (laufbahnIndex === 30) {
-                    feld$.className += ' basis-grün';
+                    feld$.className += ' basis-Grün';
                 }
 
                 for (let spielerId = 0; spielerId < spielerListe.length; spielerId++) {
