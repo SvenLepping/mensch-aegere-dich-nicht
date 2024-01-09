@@ -11,16 +11,16 @@ const spielerListe = [{
     //Laufbahnindex der Spielfigur
     //-1 = auf Heimfeld
     //40-43 Zielfeld
-    spielFiguren: [40, 19, 4, 22],
+    spielFiguren: [-1, -1, -1, -1],
 }, {
     id: 1,
-    spielFiguren: [40, 27, 14, 32],
+    spielFiguren: [-1, -1, -1, -1],
 }, {
     id: 2,
-    spielFiguren: [40, 18, 12, 25],
+    spielFiguren: [-1, -1, -1, -1],
 }, {
     id: 3,
-    spielFiguren: [40, 28, 29, 7],
+    spielFiguren: [-1, -1, -1, -1],
 }]
 
 // Array der Größe 52 wird erstellt und mit null initialisiert
@@ -391,11 +391,10 @@ async function spielzugAusfuehren() {
     }
     else {
         wechsleSpieler();
-        zeigeNeueSpielerFarbeAlert();
+        await zeigeNeueSpielerFarbeAlert();
     }
 
 }
-
 
 // schmeißt den Würfel und gibt ein Zahl von 1-6 aus
 function wuerfeln() {
@@ -494,13 +493,19 @@ function warteAufAenderung() {
 // wechselt den aktuellen Spieler
 function wechsleSpieler() {
     aktuellerSpielerID = (aktuellerSpielerID + 1) % 4;
-    wurfAnzahl = 0; 
+    wurfAnzahl = 0;
 }
 
-function zeigeNeueSpielerFarbeAlert() {
+
+async function zeigeNeueSpielerFarbeAlert() {
     // Anzeige eines Alerts mit der neuen Spielerfarbe
     const neueSpielerFarbe = gibSpielerFarbe(aktuellerSpielerID);
-    window.alert(`Jetzt ist Spieler ${neueSpielerFarbe} dran.`);   
+    return new Promise(resolve => {
+        setTimeout(() => {
+            window.alert(`Jetzt ist Spieler ${neueSpielerFarbe} dran.`);
+            resolve();
+        }, 500);
+    });
 }
 
 
