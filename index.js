@@ -401,7 +401,7 @@ async function spielzugAusfuehren() {
 function wuerfeln() {
     wurfAnzahl++;
     const wurfErgebnis = Math.floor(Math.random() * 6) + 1; // Würfelt eine Zahl zwischen 1 und 6
-    window.alert(`Spieler ${gibSpielerFarbe(aktuellerSpielerID)}(${aktuellerSpielerID}) hat eine ${wurfErgebnis} gewürfelt`);
+    window.alert(`Spieler ${gibSpielerFarbe(aktuellerSpielerID)} (ID = ${aktuellerSpielerID}) hat eine ${wurfErgebnis} gewürfelt`);
     return wurfErgebnis;
 }
 
