@@ -67,28 +67,28 @@ h1 {
     background-color: #ffe0b2; /* Helle Pfadfarbe */
 }
 
-.basis-rot{
+.basis-Rot{
     background-color: rgb(255, 103, 103); /* Transparente Hintergrundfarbe */
     transition: transform 0.3s; /* Füge die Transition-Eigenschaft für Hover-Effekt hinzu */
 }
-.basis-blau{
+.basis-Blau{
     background-color: rgba(125, 123, 255); /* Transparente Hintergrundfarbe */
     transition: transform 0.3s; /* Füge die Transition-Eigenschaft für Hover-Effekt hinzu */
 }
-.basis-gelb{
+.basis-Gelb{
     background-color: rgb(249, 251, 118); /* Transparente Hintergrundfarbe */
     transition: transform 0.3s; /* Füge die Transition-Eigenschaft für Hover-Effekt hinzu */
 }
 
-.basis-grün {
+.basis-Grün {
     background-color: rgba(132, 226, 109); /* Transparente Hintergrundfarbe */
     transition: transform 0.3s; /* Füge die Transition-Eigenschaft für Hover-Effekt hinzu */
 }
 
-.basis-rot:hover,
-.basis-blau:hover,
-.basis-gelb:hover,
-.basis-grün:hover {
+.basis-Rot:hover,
+.basis-Blau:hover,
+.basis-Gelb:hover,
+.basis-Grün:hover {
     transform: scale(1); /* Verhindere Vergrößerung bei Hover */
 }
 
@@ -106,18 +106,18 @@ h1 {
     transform: scale(1.1); /* Vergrößere die Spielfigur leicht bei Hover */
 }
 
-.spiel-figur-rot {
+.spiel-figur-Rot {
     background-color: #ff0000; /* Rotes Spielfiguren */
 }
 
-.spiel-figur-blau {
+.spiel-figur-Blau {
     background-color: #0000ff; /* Blaues Spielfiguren */
 }
 
-.spiel-figur-gelb {
+.spiel-figur-Gelb {
     background-color: yellow; /* Gelbe Spielfiguren */
 }
 
-.spiel-figur-grün {
+.spiel-figur-Grün {
     background-color: green; /* Grüne Spielfiguren */
 }
