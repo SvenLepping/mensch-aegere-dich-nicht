@@ -11,7 +11,7 @@ const spielerListe = [{
     //Laufbahnindex der Spielfigur
     //-1 = auf Heimfeld
     //40-43 Zielfeld
-    spielFiguren: [-1, -1, -1, -1],
+    spielFiguren: [39, 38, 37, 36],
 }, {
     id: 1,
     spielFiguren: [-1, -1, -1, -1],
@@ -106,7 +106,7 @@ function renderSpielbrett() {
                 }
             }
 
-            const zielFeld = hohleZielFeldIndex(zeile, spalte);
+            const zielFeld = holeZielFeldIndex(zeile, spalte);
             //Zielfelder werden gefärbt
             if (zielFeld != null) {
                 const spielerFarbe = gibSpielerFarbe(zielFeld.spielerId);
@@ -166,7 +166,6 @@ function holeLaufbahnIndex(zeile, spalte) {
     if (spalte === 5 && zeile === 10) {
         return 39;
     }
-
     return null;
 }
 
@@ -179,7 +178,6 @@ function holeHeimFeldIndex(zeile, spalte) {
             heimFeldIndex: spalte + (2 * (zeile - 9))
         }
     }
-
     //Spieler 2 Blau
     if (zeile >= 0 && zeile <= 1 && spalte <= 1) {
         return {
@@ -188,7 +186,6 @@ function holeHeimFeldIndex(zeile, spalte) {
             heimFeldIndex: spalte + (2 * zeile)
         }
     }
-
     //Spieler 3 Gelb
     if (zeile >= 0 && zeile <= 1 && spalte >= 9 && spalte <= 10) {
         return {
@@ -197,7 +194,6 @@ function holeHeimFeldIndex(zeile, spalte) {
             heimFeldIndex: (spalte - 9) + (2 * zeile)
         }
     }
-
     //Spieler 4 Grün
     if (zeile >= 9 && zeile <= 10 && spalte >= 9 && spalte <= 10) {
         return {
@@ -210,7 +206,7 @@ function holeHeimFeldIndex(zeile, spalte) {
     return null;
 }
 
-function hohleZielFeldIndex(zeile, spalte) {
+function holeZielFeldIndex(zeile, spalte) {
     //Spieler 1 Rot
     if (spalte === 5 && (zeile <= 9 && zeile >= 6)) {
         return {
@@ -384,10 +380,7 @@ async function spielzugAusfuehren() {
     if (prüfeFertig()) {
         renderSpielbrett();
         window.alert(`Spieler ${gibSpielerFarbe(aktuellerSpielerID)}(${aktuellerSpielerID}) hat gewonnen! Das Spiel ist vorbei!`);
-        spielerListe[0] = [-1, -1, -1, -1];
-        spielerListe[1] = [-1, -1, -1, -1];
-        spielerListe[2] = [-1, -1, -1, -1];
-        spielerListe[3] = [-1, -1, -1, -1];
+        spielBrettZurueckSetzen();
     }
     else {
         wechsleSpieler();
@@ -436,12 +429,24 @@ async function spielFigurAuswaehlenUndSetzen(wurfErgebnis) {
                         console.log("andere Spielfigur auswählen");
                     } else {
                         figurSchlagen(wertAnkunftsFeld);
+                        console.log("Gedrückte Spieler ID", gedrueckteSpielerID);
+                        console.log("Gedrückte Figur ID", gedrueckteFigurID);
+                        console.log("Aktuelle Spieler ID", aktuellerSpielerID);
                         spielerListe[gedrueckteSpielerID].spielFiguren[gedrueckteFigurID] = wertAnkunftsFeld;
+                        spielFigurAuswahlZuruecksetzen();
+                        console.log("ICH SETZE DIE FIGUR, NACHDEM ICH JEMANDEN GESCHLAGEN HABE");
                         renderSpielbrett();
                     }
-                } else {
+                }
+                else {
                     console.log("Ausgewählte Figur setzen");
-                    spielerListe[gedrueckteSpielerID].spielFiguren[gedrueckteFigurID] = wertAnkunftsFeld;
+                    console.log("ICH SETZE DIE FIGUR");
+                    console.log("Gedrückte Spieler ID", gedrueckteSpielerID);
+                    console.log("Gedrückte Figur ID", gedrueckteFigurID);
+                    console.log("Aktuelle Spieler ID", aktuellerSpielerID);
+                    spielerListe[aktuellerSpielerID].spielFiguren[gedrueckteFigurID] = wertAnkunftsFeld;
+                    //spielerListe[aktuellerSpielerID].spielFiguren[gedrueckteFigurID] = wertAnkunftsFeld;
+                    spielFigurAuswahlZuruecksetzen();
                     renderSpielbrett();
                 }
             }
@@ -450,7 +455,6 @@ async function spielFigurAuswaehlenUndSetzen(wurfErgebnis) {
                 console.log("Ungültige Figurauswahl");
                 spielFigurAuswahlZuruecksetzen();
                 await spielFigurAuswaehlenUndSetzen(wurfErgebnis);
-                return;
             }
         }
         //Spieler hat eine falsche Figur ausgewählt
@@ -458,7 +462,6 @@ async function spielFigurAuswaehlenUndSetzen(wurfErgebnis) {
             console.log("Ungültige Figurauswahl");
             spielFigurAuswahlZuruecksetzen();
             await spielFigurAuswaehlenUndSetzen(wurfErgebnis);
-            return;
         }
     }
 }
@@ -512,6 +515,7 @@ async function zeigeNeueSpielerFarbeAlert() {
 function figurSchlagen(feldIndex) {
     let spielerIdGeschlagen = -1;
     let spielFigurIndex = -1;
+    //Nur zwischen 0 und 39, da sich sonst die Figuren in den unterschiedlichen Zielfeldern schlagen 
     if (feldIndex <= 39 && feldIndex >= 0) {
         if (aktuellerSpielerID === 0) {
             console.log("SpielerId=0")
@@ -650,11 +654,6 @@ function ankunftsSpielFeldBerechnen(wertAktuellesFeld, wurfZahl) {
             //Spielfigurauswahl gibt einen Fehler aus, neue Auswahl!
             return 50;
         }
-        // wenn die Felder zwischen Startfeld blau und dem Feld 39 liegen und nachher 39 überschreiten und auf Felder 0-9 gehen   
-        if (ankunftsFeldTheoretisch > letztesFeld && wertAktuellesFeld >= startFeldSpieler && ankunftsFeldTheoretisch <= (letztesFeld + 6)) {
-            ankunftsFeldSpieler1 = ankunftsFeldTheoretisch - 40;
-            return ankunftsFeldSpieler1;
-        }
         //Spieler bleibt unter Felder oder gleich Feld 39 und steht zwischen 10 und 39
         if (ankunftsFeldTheoretisch <= letztesFeld && wertAktuellesFeld >= startFeldSpieler) {
             ankunftsFeldSpieler1 = ankunftsFeldTheoretisch;
@@ -670,7 +669,11 @@ function ankunftsSpielFeldBerechnen(wertAktuellesFeld, wurfZahl) {
             ankunftsFeldSpieler1 = ankunftsFeldTheoretisch + 30;
             return ankunftsFeldSpieler1;
         }
-
+        // wenn die Felder zwischen Startfeld blau und dem Feld 39 liegen und nachher 39 überschreiten und auf Felder 0-9 gehen   
+        if (ankunftsFeldTheoretisch > letztesFeld && wertAktuellesFeld >= startFeldSpieler && ankunftsFeldTheoretisch <= (letztesFeld + 6)) {
+            ankunftsFeldSpieler1 = ankunftsFeldTheoretisch - 40;
+            return ankunftsFeldSpieler1;
+        }
     }
     //Spieler Gelb
     if (aktuellerSpielerID === 2) {
@@ -687,11 +690,6 @@ function ankunftsSpielFeldBerechnen(wertAktuellesFeld, wurfZahl) {
             //Spielfigurauswahl gibt einen Fehler aus, neue Auswahl!
             return 50;
         }
-        // wenn die Felder zwischen Startfeld gelb und dem Feld 39 liegen und nachher 39 überschreiten und auf Felder 0-19 gehen
-        if (ankunftsFeldTheoretisch > letztesFeld && wertAktuellesFeld >= startFeldSpieler && ankunftsFeldTheoretisch <= (letztesFeld + 6)) {
-            ankunftsFeldSpieler2 = ankunftsFeldTheoretisch - 40;
-            return ankunftsFeldSpieler2;
-        }
         //Spieler bleibt unter Felder oder gleich Feld 39 und steht zwischen 20 und 39
         if (ankunftsFeldTheoretisch <= letztesFeld && wertAktuellesFeld >= startFeldSpieler) {
             ankunftsFeldSpieler2 = ankunftsFeldTheoretisch;
@@ -705,6 +703,11 @@ function ankunftsSpielFeldBerechnen(wertAktuellesFeld, wurfZahl) {
         //Spieler gehen ins Zielfeld
         if (ankunftsFeldTheoretisch >= startFeldSpieler && ankunftsFeldTheoretisch <= 25 && wertAktuellesFeld < startFeldSpieler && wertAktuellesFeld >= erstesFeld) {
             ankunftsFeldSpieler2 = ankunftsFeldTheoretisch + 20;
+            return ankunftsFeldSpieler2;
+        }
+        // wenn die Felder zwischen Startfeld gelb und dem Feld 39 liegen und nachher 39 überschreiten und auf Felder 0-19 gehen
+        if (ankunftsFeldTheoretisch > letztesFeld && wertAktuellesFeld >= startFeldSpieler && ankunftsFeldTheoretisch <= (letztesFeld + 6)) {
+            ankunftsFeldSpieler2 = ankunftsFeldTheoretisch - 40;
             return ankunftsFeldSpieler2;
         }
     }
@@ -723,11 +726,6 @@ function ankunftsSpielFeldBerechnen(wertAktuellesFeld, wurfZahl) {
             //Spielfigurauswahl gibt einen Fehler aus, neue Auswahl!
             return 50;
         }
-        // wenn die Felder zwischen Startfeld Grün und dem Feld 39 liegen und nachher 39 überschreiten und auf Felder 0-29 gehen
-        if (ankunftsFeldTheoretisch > letztesFeld && wertAktuellesFeld >= startFeldSpieler && ankunftsFeldTheoretisch <= (letztesFeld + 6)) {
-            ankunftsFeldSpieler3 = ankunftsFeldTheoretisch - 40;
-            return ankunftsFeldSpieler3;
-        }
         //Spieler bleibt unter Felder oder gleich Feld 39 und steht zwischen 30 und 39
         if (ankunftsFeldTheoretisch <= letztesFeld && wertAktuellesFeld >= startFeldSpieler) {
             ankunftsFeldSpieler3 = ankunftsFeldTheoretisch;
@@ -741,6 +739,11 @@ function ankunftsSpielFeldBerechnen(wertAktuellesFeld, wurfZahl) {
         //Spieler gehen ins Zielfeld
         if (ankunftsFeldTheoretisch >= startFeldSpieler && ankunftsFeldTheoretisch <= 35 && wertAktuellesFeld < startFeldSpieler && wertAktuellesFeld >= erstesFeld) {
             ankunftsFeldSpieler3 = ankunftsFeldTheoretisch + 10;
+            return ankunftsFeldSpieler3;
+        }
+        // wenn die Felder zwischen Startfeld Grün und dem Feld 39 liegen und nachher 39 überschreiten und auf Felder 0-29 gehen
+        if (ankunftsFeldTheoretisch > letztesFeld && wertAktuellesFeld >= startFeldSpieler && ankunftsFeldTheoretisch <= (letztesFeld + 6)) {
+            ankunftsFeldSpieler3 = ankunftsFeldTheoretisch - 40;
             return ankunftsFeldSpieler3;
         }
     }
@@ -771,6 +774,25 @@ function minEinSpielerHeimfeld() {
 
 function indexEigeneFigurStartFeld() {
     return spielerListe[aktuellerSpielerID].spielFiguren.indexOf(aktuellerSpielerID * 10);
+}
+function spielBrettZurueckSetzen() {
+    spielerListe[0].spielFiguren[0] = -1;
+    spielerListe[0].spielFiguren[1] = -1;
+    spielerListe[0].spielFiguren[2] = -1;
+    spielerListe[0].spielFiguren[3] = -1;
+    spielerListe[1].spielFiguren[0] = -1;
+    spielerListe[1].spielFiguren[1] = -1;
+    spielerListe[1].spielFiguren[2] = -1;
+    spielerListe[1].spielFiguren[3] = -1;
+    spielerListe[2].spielFiguren[0] = -1;
+    spielerListe[2].spielFiguren[1] = -1;
+    spielerListe[2].spielFiguren[2] = -1;
+    spielerListe[2].spielFiguren[3] = -1;
+    spielerListe[3].spielFiguren[0] = -1;
+    spielerListe[3].spielFiguren[1] = -1;
+    spielerListe[3].spielFiguren[2] = -1;
+    spielerListe[3].spielFiguren[3] = -1;
+
 }
 
 // Wenn Seite lädt dann Spielfeld zeichnen
