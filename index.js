@@ -11,16 +11,16 @@ const spielerListe = [{
     //Laufbahnindex der Spielfigur
     //-1 = auf Heimfeld
     //40-43 Zielfeld
-    spielFiguren: [-1, -1, -1, -1],
+    spielFiguren: [38, 19, 4, 22],
 }, {
     id: 1,
-    spielFiguren: [-1, -1, -1, -1],
+    spielFiguren: [8, 27, 14, 32],
 }, {
     id: 2,
-    spielFiguren: [-1, -1, -1, -1],
+    spielFiguren: [37, 18, 12, 25],
 }, {
     id: 3,
-    spielFiguren: [-1, -1, -1, -1],
+    spielFiguren: [39, 28, 29, 7],
 }]
 
 // Array der Größe 52 wird erstellt und mit null initialisiert
@@ -381,7 +381,12 @@ async function spielzugAusfuehren() {
     }
 
     if (prüfeFertig()) {
-        window.alert(`Spieler ${aktuellerSpielerID} hat gewonnen!`);
+        renderSpielbrett();
+        window.alert(`Spieler ${aktuellerSpielerID} hat gewonnen! Das Spiel ist vorbei!`);
+        spielerListe[0]=[-1,-1,-1,-1];
+        spielerListe[1]=[-1,-1,-1,-1];
+        spielerListe[2]=[-1,-1,-1,-1];
+        spielerListe[3]=[-1,-1,-1,-1];
     }
     else {
         wechsleSpieler();
@@ -606,37 +611,49 @@ function erstenHeimFeldSpielerSuchen(spielerListe) {
         }
     }
 }
-function ankunftsSpielFeldBerechnen(indexAktuellesFeld, wurfZahl) {
+function ankunftsSpielFeldBerechnen(wertAktuellesFeld, wurfZahl) {
     const letztesFeld = 39;
     const erstesFeld = 0;
+    const zielFeld1 = 40;
+    const zielFeld4 = 43;
 
     //Spieler Rot
     if (aktuellerSpielerID === 0) {
-        return indexAktuellesFeld + wurfZahl;
+        return wertAktuellesFeld + wurfZahl;
     }
     // Spieler Blau
     if (aktuellerSpielerID === 1) {
         const feldVorZielfelder = 9;
         const startFeldSpieler = 10;
-        let ankunftsFeldTheoretisch = indexAktuellesFeld + wurfZahl;
+        let ankunftsFeldTheoretisch = wertAktuellesFeld + wurfZahl;
         let ankunftsFeldSpieler1 = null;
-        // wenn die Felder zwischen Startfeld blau und dem Feld 39 liegen und nachher 39 überschreiten und auf Felder 0-9 gehen
-        if (ankunftsFeldTheoretisch > letztesFeld && indexAktuellesFeld >= startFeldSpieler) {
+        //Figuren in den Zielfeldern versetzen
+        if (ankunftsFeldTheoretisch<=zielFeld4 && wertAktuellesFeld>= zielFeld1){
+            ankunftsFeldSpieler1 = ankunftsFeldTheoretisch;
+            return ankunftsFeldSpieler1;
+        }    
+        if(ankunftsFeldTheoretisch > zielFeld4 && (wertAktuellesFeld >= zielFeld1 || wertAktuellesFeld === 9 || wertAktuellesFeld === 8))
+        {
+            //Spielfigurauswahl gibt einen Fehler aus, neue Auswahl!
+            return 50;
+        }
+        // wenn die Felder zwischen Startfeld blau und dem Feld 39 liegen und nachher 39 überschreiten und auf Felder 0-9 gehen   
+        if (ankunftsFeldTheoretisch > letztesFeld && wertAktuellesFeld >= startFeldSpieler  && ankunftsFeldTheoretisch<= (letztesFeld+6)) {
             ankunftsFeldSpieler1 = ankunftsFeldTheoretisch - 40;
             return ankunftsFeldSpieler1;
         }
         //Spieler bleibt unter Felder oder gleich Feld 39 und steht zwischen 10 und 39
-        if (ankunftsFeldTheoretisch <= letztesFeld && indexAktuellesFeld >= startFeldSpieler) {
+        if (ankunftsFeldTheoretisch <= letztesFeld && wertAktuellesFeld >= startFeldSpieler) {
             ankunftsFeldSpieler1 = ankunftsFeldTheoretisch;
             return ankunftsFeldSpieler1;
         }
         //Spieler steht zwischen 0 und 10 und bleibt auch dazwischen
-        if (ankunftsFeldTheoretisch <= feldVorZielfelder && indexAktuellesFeld >= erstesFeld) {
+        if (ankunftsFeldTheoretisch <= feldVorZielfelder && wertAktuellesFeld >= erstesFeld) {
             ankunftsFeldSpieler1 = ankunftsFeldTheoretisch;
             return ankunftsFeldSpieler1;
         }
         //Spieler gehen ins Zielfeld
-        if (ankunftsFeldTheoretisch >= startFeldSpieler && ankunftsFeldTheoretisch <= 15 && indexAktuellesFeld < startFeldSpieler && indexAktuellesFeld >= erstesFeld) {
+        if (ankunftsFeldTheoretisch >= startFeldSpieler && ankunftsFeldTheoretisch <= 15 && wertAktuellesFeld < startFeldSpieler && wertAktuellesFeld >= erstesFeld) {
             ankunftsFeldSpieler1 = ankunftsFeldTheoretisch + 30;
             return ankunftsFeldSpieler1;
         }
@@ -646,25 +663,35 @@ function ankunftsSpielFeldBerechnen(indexAktuellesFeld, wurfZahl) {
     if (aktuellerSpielerID === 2) {
         const feldVorZielfelder = 19;
         const startFeldSpieler = 20;
-        let ankunftsFeldTheoretisch = indexAktuellesFeld + wurfZahl;
+        let ankunftsFeldTheoretisch = wertAktuellesFeld + wurfZahl;
         let ankunftsFeldSpieler2 = null;
+        //Figuren in den Zielfeldern versetzen
+        if (ankunftsFeldTheoretisch<=zielFeld4 && wertAktuellesFeld>= zielFeld1){
+            ankunftsFeldSpieler2 = ankunftsFeldTheoretisch;
+            return ankunftsFeldSpieler2;
+        }  
+        if(ankunftsFeldTheoretisch > zielFeld4 && (wertAktuellesFeld >= zielFeld1 || wertAktuellesFeld === 19 || wertAktuellesFeld === 18))
+        {
+            //Spielfigurauswahl gibt einen Fehler aus, neue Auswahl!
+            return 50;
+        }
         // wenn die Felder zwischen Startfeld gelb und dem Feld 39 liegen und nachher 39 überschreiten und auf Felder 0-19 gehen
-        if (ankunftsFeldTheoretisch > letztesFeld && indexAktuellesFeld >= startFeldSpieler) {
+        if (ankunftsFeldTheoretisch > letztesFeld && wertAktuellesFeld >= startFeldSpieler && ankunftsFeldTheoretisch<= (letztesFeld+6)) {
             ankunftsFeldSpieler2 = ankunftsFeldTheoretisch - 40;
             return ankunftsFeldSpieler2;
         }
         //Spieler bleibt unter Felder oder gleich Feld 39 und steht zwischen 20 und 39
-        if (ankunftsFeldTheoretisch <= letztesFeld && indexAktuellesFeld >= startFeldSpieler) {
+        if (ankunftsFeldTheoretisch <= letztesFeld && wertAktuellesFeld >= startFeldSpieler) {
             ankunftsFeldSpieler2 = ankunftsFeldTheoretisch;
             return ankunftsFeldSpieler2;
         }
         //Spieler steht zwischen 0 und 19 und bleibt auch dazwischen
-        if (ankunftsFeldTheoretisch <= feldVorZielfelder && indexAktuellesFeld >= erstesFeld) {
+        if (ankunftsFeldTheoretisch <= feldVorZielfelder && wertAktuellesFeld >= erstesFeld) {
             ankunftsFeldSpieler2 = ankunftsFeldTheoretisch;
             return ankunftsFeldSpieler2;
         }
         //Spieler gehen ins Zielfeld
-        if (ankunftsFeldTheoretisch >= startFeldSpieler && ankunftsFeldTheoretisch <= 25 && indexAktuellesFeld < startFeldSpieler && indexAktuellesFeld >= erstesFeld) {
+        if (ankunftsFeldTheoretisch >= startFeldSpieler && ankunftsFeldTheoretisch <= 25 && wertAktuellesFeld < startFeldSpieler && wertAktuellesFeld >= erstesFeld) {
             ankunftsFeldSpieler2 = ankunftsFeldTheoretisch + 20;
             return ankunftsFeldSpieler2;
         }
@@ -673,25 +700,35 @@ function ankunftsSpielFeldBerechnen(indexAktuellesFeld, wurfZahl) {
     if (aktuellerSpielerID === 3) {
         const feldVorZielfelder = 29;
         const startFeldSpieler = 30;
-        let ankunftsFeldTheoretisch = indexAktuellesFeld + wurfZahl;
+        let ankunftsFeldTheoretisch = wertAktuellesFeld + wurfZahl;
         let ankunftsFeldSpieler3 = null;
+        //Figuren in den Zielfeldern versetzen
+        if (ankunftsFeldTheoretisch<=zielFeld4 && wertAktuellesFeld>= zielFeld1){
+            ankunftsFeldSpieler3 = ankunftsFeldTheoretisch;
+            return ankunftsFeldSpieler3;
+        } 
+        if(ankunftsFeldTheoretisch > zielFeld4 && (wertAktuellesFeld >= zielFeld1 || wertAktuellesFeld === 29 || wertAktuellesFeld === 28))
+        {
+            //Spielfigurauswahl gibt einen Fehler aus, neue Auswahl!
+            return 50;
+        } 
         // wenn die Felder zwischen Startfeld Grün und dem Feld 39 liegen und nachher 39 überschreiten und auf Felder 0-29 gehen
-        if (ankunftsFeldTheoretisch > letztesFeld && indexAktuellesFeld >= startFeldSpieler) {
+        if (ankunftsFeldTheoretisch > letztesFeld && wertAktuellesFeld >= startFeldSpieler && ankunftsFeldTheoretisch<= (letztesFeld+6)) {
             ankunftsFeldSpieler3 = ankunftsFeldTheoretisch - 40;
             return ankunftsFeldSpieler3;
         }
         //Spieler bleibt unter Felder oder gleich Feld 39 und steht zwischen 30 und 39
-        if (ankunftsFeldTheoretisch <= letztesFeld && indexAktuellesFeld >= startFeldSpieler) {
+        if (ankunftsFeldTheoretisch <= letztesFeld && wertAktuellesFeld >= startFeldSpieler) {
             ankunftsFeldSpieler3 = ankunftsFeldTheoretisch;
             return ankunftsFeldSpieler3;
         }
         //Spieler steht zwischen 0 und 29 und bleibt auch dazwischen
-        if (ankunftsFeldTheoretisch <= feldVorZielfelder && indexAktuellesFeld >= erstesFeld) {
+        if (ankunftsFeldTheoretisch <= feldVorZielfelder && wertAktuellesFeld >= erstesFeld) {
             ankunftsFeldSpieler3 = ankunftsFeldTheoretisch;
             return ankunftsFeldSpieler3;
         }
         //Spieler gehen ins Zielfeld
-        if (ankunftsFeldTheoretisch >= startFeldSpieler && ankunftsFeldTheoretisch <= 35 && indexAktuellesFeld < startFeldSpieler && indexAktuellesFeld >= erstesFeld) {
+        if (ankunftsFeldTheoretisch >= startFeldSpieler && ankunftsFeldTheoretisch <= 35 && wertAktuellesFeld < startFeldSpieler && wertAktuellesFeld >= erstesFeld) {
             ankunftsFeldSpieler3 = ankunftsFeldTheoretisch + 10;
             return ankunftsFeldSpieler3;
         }
