@@ -129,8 +129,7 @@ function renderSpielbrett() {
     console.log(spielerListe[0]);
 }
 
-// aus einer Koordinate vom Spielbrett wird der Laufbahnindex zurückgegeben
-// TODO: Algorhytmus optimieren 
+// aus einer Koordinate vom Spielbrett wird der Laufbahnindex zurückgegeben 
 function holeLaufbahnIndex(zeile, spalte) {
     if (spalte === 4 && (zeile >= 7 && zeile <= 10)) {
         return 10 - zeile;
@@ -261,25 +260,28 @@ async function spielzugAusfuehren() {
     const spielerFarbe = gibSpielerFarbe(aktuellerSpielerID);
     let darfErneutWuerfeln = false;
     const wurfErgebnis = wuerfeln();
-    //Prüfung ob Startfeld mit eigenem Spieler besetzt ist und keiner im Heimfeld
+    //Prüfung ob Startfeld mit eigenem Spieler besetzt ist und mindestens ein Spieler im Heimfeld ist
     if (pruefungSpielFeldBesetzt(aktuellerSpielerID * 10) && pruefungBesetztEigenerSpieler(aktuellerSpielerID * 10) && minEinSpielerHeimfeld() === true) {
         const indexFigurStartfeld = indexEigeneFigurStartFeld();
         const wertAnkunftsFeld = ankunftsSpielFeldBerechnen(aktuellerSpielerID * 10, wurfErgebnis);
-
+        //Prüft ob das Feld wo die Figur vom Startfeld aus hingezogen werden soll besetzt ist
         if (pruefungSpielFeldBesetzt(wertAnkunftsFeld)) {
+            //Prüft ob das Feld wo die Figur vom Startfeld aus hingezogen werden soll durch einen eigenen Spieler besetzt ist
             if (pruefungBesetztEigenerSpieler(wertAnkunftsFeld)) {
-                console.log(`Ungültiger Zug, bitte eine andere Figur auswählen!`);
+                window.alert(`Ungültiger Zug, bitte eine andere Figur auswählen!`);
                 await spielFigurAuswaehlenUndSetzen(wurfErgebnis);
                 spielFigurAuswahlZuruecksetzen();
             }
+            //Ankunftsfeld der Figur ist durch einen fremden Spieler besetzt
             else {
                 figurSchlagen(wertAnkunftsFeld);
                 aktiverSpieler.spielFiguren[indexFigurStartfeld] = wertAnkunftsFeld;
             }
+        //Ankunftsfeld nicht besetzt
         } else {
             aktiverSpieler.spielFiguren[indexFigurStartfeld] = wertAnkunftsFeld;
         }
-
+        //Wenn der Spieler hier eine 6 würfelt, darf er noch einmal würfeln
         if (wurfErgebnis === 6) {
             darfErneutWuerfeln = true;
         }
@@ -288,12 +290,14 @@ async function spielzugAusfuehren() {
     else {
         //Wenn sich kein Spieler auf der Laufbahn befindet
         if (pruefungKeinSpielerLaufbahn(aktiverSpieler.spielFiguren)) {
-            console.log("ICH BIN BEI ");
+            //Spieler hat keine 6 gewürfelt
             if (wurfErgebnis < 6) {
-                console.log(`Bitte Würfeln Sie erneut, Sie haben schon ${wurfAnzahl}/3 Versuchen benötigt.`);
+                window.alert(`Bitte Würfeln Sie erneut, Sie haben schon ${wurfAnzahl}/3 Versuchen benötigt.`);
+                //Wenn noch nicht drei mal gewürfelt wurde, darf der Spieler weiter würfeln
                 if (wurfAnzahl < 3) {
                     darfErneutWuerfeln = true;
                 }
+                //Wenn der Spieler schon drei mal gewürfelt hat, darf er nicht noch einmal würfeln
                 else {
                     darfErneutWuerfeln = false;
                 }
@@ -305,16 +309,20 @@ async function spielzugAusfuehren() {
                 let startFeldSpieler = aktuellerSpielerID * 10;
                 console.log(`StartFeldSpieler = ${startFeldSpieler}`);
 
+                //Prüfung ob das Startfeld, wo die Figur hingesetzt werden soll, besetzt ist
                 if (pruefungSpielFeldBesetzt(startFeldSpieler)) {
+                    // Prüft ob diese durch einen eigenen Spieler besetzt ist
                     if (pruefungBesetztEigenerSpieler(startFeldSpieler)) {
-                        console.log(`Ungültiger Zug, bitte eine andere Figur auswählen!`);
+                        window.alert(`Ungültiger Zug, bitte eine andere Figur auswählen!`);
                         //wird nie eintreten, da kein Spieler auf der Laufbahn ist (wie oben geprüft)
                     }
+                    //Starfeld ruch fremden Spieler besetzt
                     else {
                         figurSchlagen(startFeldSpieler);
                         figurStartfeld(aktiverSpieler, ersterSpielerImHeimfeld);
                     }
                 }
+                //Startfeld nicht besetzt
                 else {
                     figurStartfeld(aktiverSpieler, ersterSpielerImHeimfeld);
                 }
@@ -343,30 +351,36 @@ async function spielzugAusfuehren() {
                         if (pruefungBesetztEigenerSpieler(startFeldSpieler)) {
                             //Prüfung ob Ankunftsspielfeld besetzt ist wenn Spielfigur von Startfeld weitergesetzt wird
                             if (pruefungSpielFeldBesetzt(wertAnkunftsFeld)) {
+                                //Prüfung ob das Ankunftsfeld durch eigenen Spieler besetzt ist
                                 if (pruefungBesetztEigenerSpieler(wertAnkunftsFeld)) {
-                                    console.log(`Ungültiger Zug, bitte eine andere Figur auswählen!`);
+                                    window.alert(`Ungültiger Zug, bitte eine andere Figur auswählen!`);
                                     await spielFigurAuswaehlenUndSetzen(wurfErgebnis);
                                     spielFigurAuswahlZuruecksetzen();
                                 }
+                                //Ankunftsfeld durch fremden Spieler besetzt
                                 else {
                                     figurSchlagen(wertAnkunftsFeld);
                                     aktiverSpieler.spielFiguren[indexEigeneFigurStartFeld()] = wertAnkunftsFeld;
 
                                 }
-                            } else {
+                            } 
+                            //Ankunftsfeld nicht besetzt
+                            else {
                                 aktiverSpieler.spielFiguren[indexEigeneFigurStartFeld()] = wertAnkunftsFeld;
                             }
                         }
+                        //Starfeld von fremden Spieler besetzt
                         else {
                             figurSchlagen(startFeldSpieler);
                             figurStartfeld(aktiverSpieler, ersterSpielerImHeimfeld);
                         }
                     }
+                    //Startfeld frei
                     else {
                         figurStartfeld(aktiverSpieler, ersterSpielerImHeimfeld);
                     }
                 }
-                //Wenn kein Spieler im heimfeld ist und eine 6 gewürfelt
+                //Wenn kein Spieler im Heimfeld ist und eine 6 gewürfelt
                 else {
                     await spielFigurAuswaehlenUndSetzen(wurfErgebnis);
                     spielFigurAuswahlZuruecksetzen();
@@ -374,8 +388,9 @@ async function spielzugAusfuehren() {
             }
         }
     }
-
+    //Spielbrett neu laden um Veränderungen sichtbar zu mahcen
     renderSpielbrett();
+    //return, damit dann der Spielerwechsel nicht durchgeführt wird
     if (darfErneutWuerfeln) {
         return;
     }
