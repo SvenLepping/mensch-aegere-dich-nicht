@@ -11,7 +11,7 @@ const spielerListe = [{
     //Laufbahnindex der Spielfigur
     //-1 = auf Heimfeld
     //40-43 Zielfeld
-    spielFiguren: [39, 38, 37, 36],
+    spielFiguren: [-1, -1, -1, -1],
 }, {
     id: 1,
     spielFiguren: [-1, -1, -1, -1],
@@ -81,6 +81,7 @@ function renderSpielbrett() {
                         spielfigur$.addEventListener("click", function () {
                             spielFigurGedrueckt(spielerId, spielFigurId, spieler.spielFiguren[spielFigurId]);
                         })
+                        spielfigur$.innerText=spielFigurId;
                         feld$.appendChild(spielfigur$);
                     }
                 }
@@ -114,17 +115,20 @@ function renderSpielbrett() {
 
                 const zielfeldAktuellerSpieler = spielerListe[zielFeld.spielerId];
                 const zielFeldPosition = zielFeld.zielFeldIndex + 40;
+                const figurId = zielfeldAktuellerSpieler.spielFiguren.indexOf(zielFeldPosition);
                 if (zielfeldAktuellerSpieler.spielFiguren.includes(zielFeldPosition)) {
                     const spielfigur$ = document.createElement('div');
                     spielfigur$.className = `spiel-figur spiel-figur-${spielerFarbe}`;
                     spielfigur$.addEventListener("click", function () {
-                        spielFigurGedrueckt(zielFeld.spielerId, zielFeld.zielFeldIndex, zielFeldPosition);
+                        spielFigurGedrueckt(zielFeld.spielerId, figurId, zielFeldPosition);
                     })
+                    spielfigur$.innerText=figurId;
                     feld$.appendChild(spielfigur$);
                 }
             }
         }
     }
+    console.log(spielerListe[0]);
 }
 
 // aus einer Koordinate vom Spielbrett wird der Laufbahnindex zurückgegeben
