@@ -81,7 +81,6 @@ function renderSpielbrett() {
                         spielfigur$.addEventListener("click", function () {
                             spielFigurGedrueckt(spielerId, spielFigurId, spieler.spielFiguren[spielFigurId]);
                         })
-                        spielfigur$.innerText = spielFigurId;
                         feld$.appendChild(spielfigur$);
                     }
                 }
@@ -122,7 +121,6 @@ function renderSpielbrett() {
                     spielfigur$.addEventListener("click", function () {
                         spielFigurGedrueckt(zielFeld.spielerId, figurId, zielFeldPosition);
                     })
-                    spielfigur$.innerText = figurId;
                     feld$.appendChild(spielfigur$);
                 }
             }
@@ -290,6 +288,7 @@ async function spielzugAusfuehren() {
     else {
         //Wenn sich kein Spieler auf der Laufbahn befindet
         if (pruefungKeinSpielerLaufbahn(aktiverSpieler.spielFiguren)) {
+            console.log("ICH BIN BEI ");
             if (wurfErgebnis < 6) {
                 console.log(`Bitte Würfeln Sie erneut, Sie haben schon ${wurfAnzahl}/3 Versuchen benötigt.`);
                 if (wurfAnzahl < 3) {
@@ -449,7 +448,6 @@ async function spielFigurAuswaehlenUndSetzen(wurfErgebnis) {
                     console.log("Gedrückte Figur ID", gedrueckteFigurID);
                     console.log("Aktuelle Spieler ID", aktuellerSpielerID);
                     spielerListe[aktuellerSpielerID].spielFiguren[gedrueckteFigurID] = wertAnkunftsFeld;
-                    //spielerListe[aktuellerSpielerID].spielFiguren[gedrueckteFigurID] = wertAnkunftsFeld;
                     spielFigurAuswahlZuruecksetzen();
                     renderSpielbrett();
                 }
@@ -457,6 +455,7 @@ async function spielFigurAuswaehlenUndSetzen(wurfErgebnis) {
             //Wenn Figur über den Wert 43 gesetzt wird (außerhalb der wählbaren Felder), andere Figur wählen
             else {
                 console.log("Ungültige Figurauswahl");
+                window.alert('Ungeültiger Spielzug. Bitte wähle eine andere Figur!');
                 spielFigurAuswahlZuruecksetzen();
                 await spielFigurAuswaehlenUndSetzen(wurfErgebnis);
             }
@@ -464,6 +463,7 @@ async function spielFigurAuswaehlenUndSetzen(wurfErgebnis) {
         //Spieler hat eine falsche Figur ausgewählt
         else {
             console.log("Ungültige Figurauswahl");
+            window.alert('Ungeültiger Spielzug. Bitte wähle eine andere Figur!');
             spielFigurAuswahlZuruecksetzen();
             await spielFigurAuswaehlenUndSetzen(wurfErgebnis);
         }
@@ -476,11 +476,14 @@ function spielFigurAuswahlZuruecksetzen() {
     gedruecktePosition = null;
 }
 
+//Funktion gibt erst einen Return, wenn eine Figur angeklickt wurde
 async function pruefungAenderungFigurAuswahl() {
     const result = await warteAufAenderung();
     console.log("FIGUR AUSGEWÄHLT!");
     return result;
 }
+
+//Funktion nutzt Promises, um auf die Figurauswahl des Spielers zu warten
 function warteAufAenderung() {
     return new Promise(resolve => {
         const intervalId = setInterval(() => {
@@ -497,7 +500,7 @@ function warteAufAenderung() {
     });
 }
 
-// wechselt den aktuellen Spieler
+//Funktion wechselt den aktuellen Spieler
 function wechsleSpieler() {
     aktuellerSpielerID = (aktuellerSpielerID + 1) % 4;
     wurfAnzahl = 0;
@@ -505,7 +508,7 @@ function wechsleSpieler() {
 
 
 async function zeigeNeueSpielerFarbeAlert() {
-    // Anzeige eines Alerts mit der neuen Spielerfarbe
+    // Anzeige eines Alerts mit der Spielerfarbe, sobald ein neuer Spieler am Zug ist
     const neueSpielerFarbe = gibSpielerFarbe(aktuellerSpielerID);
     return new Promise(resolve => {
         setTimeout(() => {
@@ -515,12 +518,14 @@ async function zeigeNeueSpielerFarbeAlert() {
     });
 }
 
-
+//Funktion zum Figur "schlagen", wenn das Ankunftsfeld durch eine fremde Figur besetzt ist
 function figurSchlagen(feldIndex) {
     let spielerIdGeschlagen = -1;
     let spielFigurIndex = -1;
-    //Nur zwischen 0 und 39, da sich sonst die Figuren in den unterschiedlichen Zielfeldern schlagen 
+    //Nur zwischen 0 und 39, da sich sonst die Figuren in den unterschiedlichen Zielfeldern 
+    //schlagen, da die Zielfelder aller Spieler die Werte 40-43 besitzen
     if (feldIndex <= 39 && feldIndex >= 0) {
+        //Wenn Spieler Rot am Zug ist
         if (aktuellerSpielerID === 0) {
             console.log("SpielerId=0")
             if (spielerListe[1].spielFiguren.indexOf(feldIndex) !== -1) {
@@ -536,6 +541,7 @@ function figurSchlagen(feldIndex) {
                 spielerIdGeschlagen = 3;
             }
         }
+        //Wenn Spieler Blau am Zug ist
         if (aktuellerSpielerID === 1) {
             console.log("SpielerId=1")
             if (spielerListe[0].spielFiguren.indexOf(feldIndex) !== -1) {
@@ -551,6 +557,7 @@ function figurSchlagen(feldIndex) {
                 spielerIdGeschlagen = 3;
             }
         }
+        //Wenn Spieler Gelb am Zug ist
         if (aktuellerSpielerID === 2) {
             console.log("SpielerId=2")
             if (spielerListe[0].spielFiguren.indexOf(feldIndex) !== -1) {
@@ -566,6 +573,7 @@ function figurSchlagen(feldIndex) {
                 spielerIdGeschlagen = 3;
             }
         }
+        //Wenn Spieler Grün am Zug ist
         if (aktuellerSpielerID === 3) {
             console.log("SpielerId=3")
             if (spielerListe[0].spielFiguren.indexOf(feldIndex) !== -1) {
@@ -609,7 +617,7 @@ function prüfeFertig() {
 function figurStartfeld(aktiverSpieler, ersterSpielerHeimfeld) {
     aktiverSpieler.spielFiguren[ersterSpielerHeimfeld] = 10 * aktuellerSpielerID;
 }
-//Prüfung, ob sich kein Spieler auf der Laufbahn befindet
+//Prüfung, ob sich kein Spieler auf der Laufbahn befindet und Spieler 3 mal würfeln darf
 function pruefungKeinSpielerLaufbahn(spielerFiguren) {
     let anzahlFigurLaufbahn = 0;
 
@@ -618,23 +626,10 @@ function pruefungKeinSpielerLaufbahn(spielerFiguren) {
             anzahlFigurLaufbahn++;
         }
     }
-    if (anzahlFigurLaufbahn > 0) {
-        return false;
+    if(anzahlFigurLaufbahn === 0){
+        return true;
     }
-
-    if (!spielerFiguren.includes(43)) {
-        return false;
-    }
-    if (spielerFiguren.includes(40)) {
-        return false;
-    }
-    const feld41Besetzt = spielerFiguren.includes(41);
-    const feld42Besetzt = spielerFiguren.includes(42);
-
-    if (!feld42Besetzt && feld41Besetzt) {
-        return false;
-    }
-    return true;
+    return false;
 }
 //Ersten Heimfeld-Spieler suchen
 function erstenHeimFeldSpielerSuchen(spielerListe) {
@@ -807,7 +802,7 @@ function spielBrettZurueckSetzen() {
     spielerListe[3].spielFiguren[1] = -1;
     spielerListe[3].spielFiguren[2] = -1;
     spielerListe[3].spielFiguren[3] = -1;
-
+    renderSpielbrett();
 }
 
 // Wenn Seite lädt dann Spielfeld zeichnen
