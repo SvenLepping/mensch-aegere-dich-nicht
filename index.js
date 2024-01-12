@@ -81,7 +81,7 @@ function renderSpielbrett() {
                         spielfigur$.addEventListener("click", function () {
                             spielFigurGedrueckt(spielerId, spielFigurId, spieler.spielFiguren[spielFigurId]);
                         })
-                        spielfigur$.innerText=spielFigurId;
+                        spielfigur$.innerText = spielFigurId;
                         feld$.appendChild(spielfigur$);
                     }
                 }
@@ -122,7 +122,7 @@ function renderSpielbrett() {
                     spielfigur$.addEventListener("click", function () {
                         spielFigurGedrueckt(zielFeld.spielerId, figurId, zielFeldPosition);
                     })
-                    spielfigur$.innerText=figurId;
+                    spielfigur$.innerText = figurId;
                     feld$.appendChild(spielfigur$);
                 }
             }
@@ -610,20 +610,31 @@ function figurStartfeld(aktiverSpieler, ersterSpielerHeimfeld) {
     aktiverSpieler.spielFiguren[ersterSpielerHeimfeld] = 10 * aktuellerSpielerID;
 }
 //Prüfung, ob sich kein Spieler auf der Laufbahn befindet
-function pruefungKeinSpielerLaufbahn(spielerListe) {
+function pruefungKeinSpielerLaufbahn(spielerFiguren) {
     let anzahlFigurLaufbahn = 0;
 
-    for (let zaehler = 0; zaehler < spielerListe.length; zaehler++) {
-        if (spielerListe[zaehler] >= 0 && spielerListe[zaehler] <= 39) {
+    for (let zaehler = 0; zaehler < spielerFiguren.length; zaehler++) {
+        if (spielerFiguren[zaehler] >= 0 && spielerFiguren[zaehler] <= 39) {
             anzahlFigurLaufbahn++;
         }
     }
-    if (anzahlFigurLaufbahn === 0) {
-        return true;
-    }
-    else {
+    if (anzahlFigurLaufbahn > 0) {
         return false;
     }
+
+    if (!spielerFiguren.includes(43)) {
+        return false;
+    }
+    if (spielerFiguren.includes(40)) {
+        return false;
+    }
+    const feld41Besetzt = spielerFiguren.includes(41);
+    const feld42Besetzt = spielerFiguren.includes(42);
+
+    if (!feld42Besetzt && feld41Besetzt) {
+        return false;
+    }
+    return true;
 }
 //Ersten Heimfeld-Spieler suchen
 function erstenHeimFeldSpielerSuchen(spielerListe) {
