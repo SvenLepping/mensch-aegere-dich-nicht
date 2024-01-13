@@ -13,50 +13,57 @@ const spielerListe = [{
     //40-43 Zielfeld
     spielFiguren: [-1, -1, -1, -1],
 }, {
+    //Spieler Blau
     id: 1,
     spielFiguren: [-1, -1, -1, -1],
 }, {
+    //Spieler Gelb
     id: 2,
     spielFiguren: [-1, -1, -1, -1],
 }, {
+    //Spieler Grün
     id: 3,
     spielFiguren: [-1, -1, -1, -1],
 }]
 
-// Array der Größe 52 wird erstellt und mit null initialisiert
+//Jedes Element im Array wird zu Beginn auf "null" gesetzt
 const laufbahn = new Array(FeldGroesse * 4, null);
 
 function renderWuerfel() {
-    //Würfel wird zum Spielbrett hinzugefügt und CSS-ID wird gesetzt 
+    // Auswahl des HTML Elements mit der ID "wuerfel" über den Query Selector
     const wuerfel$ = document.querySelector('#wuerfel');
 
+    // Setzen des Textinhalts des Würfels auf "Jetzt würfeln"
     wuerfel$.textContent = 'Jetzt würfeln';
 
-    //Würfel erhält Klick-Funktion
+    // Hinzufügen eines Event Listeners, der die Funktion "spielzugAusfuehren" aufruft, wenn der Würfel geklickt wird
     wuerfel$.addEventListener('click', spielzugAusfuehren);
 }
 
-//Funktion um Spielfeld zu zeichnen
+// Funktion zum Zeichnen des Spielfelds
 function renderSpielbrett() {
     // Spielfeld-Element im HTML wird anhand der ID gesucht
     const spielbrett$ = document.querySelector('#spielbrett');
-    spielbrett$.innerHTML = "";
+    spielbrett$.innerHTML = "";  // Leert das Spielfeld, um es neu zu zeichnen
 
+    // Iteration durch jede Zeile des Spielfelds
     for (let zeile = 0; zeile < FeldGroesse; zeile++) {
-        const zeile$ = document.createElement('div');
-        zeile$.className = 'zeile';
-        spielbrett$.appendChild(zeile$);
+        const zeile$ = document.createElement('div');  // Erstellt ein div-Element für die Zeile
+        zeile$.className = 'zeile';  // Weist der Zeile die CSS-Klasse 'zeile' zu
+        spielbrett$.appendChild(zeile$);  // Fügt die Zeile dem Spielfeld hinzu
 
+        // Iteration durch jede Spalte der aktuellen Zeile
         for (let spalte = 0; spalte < FeldGroesse; spalte++) {
-            const feld$ = document.createElement('div');
-            feld$.className = 'feld';
+            const feld$ = document.createElement('div');  // Erstellt ein div-Element für das Spielfeld
+            feld$.className = 'feld';  // Weist dem Spielfeld die CSS-Klasse 'feld' zu
 
-            zeile$.appendChild(feld$);
+            zeile$.appendChild(feld$);  // Fügt das Spielfeld der aktuellen Zeile hinzu
 
             const laufbahnIndex = holeLaufbahnIndex(zeile, spalte);
-            // Laufbahn wird gefärbt 
+
+            // Wenn das Spielfeld auf der Laufbahn liegt, wird es eingefärbt und Spielfiguren werden platziert
             if (laufbahnIndex != null) {
-                feld$.className += ' laufbahn';
+                feld$.className += ' laufbahn';// Fügt die CSS-Klasse 'laufbahn' hinzu
 
                 if (laufbahnIndex === 0) {
                     feld$.className += ' basis-Rot';
@@ -70,7 +77,9 @@ function renderSpielbrett() {
                 if (laufbahnIndex === 30) {
                     feld$.className += ' basis-Grün';
                 }
-
+                
+                // Einfärben der Basisfelder entsprechend der Spielerfarbe
+                // und Platzierung der Spielfiguren auf den entsprechenden Feldern
                 for (let spielerId = 0; spielerId < spielerListe.length; spielerId++) {
                     const spieler = spielerListe[spielerId];
                     const spielerFarbe = gibSpielerFarbe(spieler.id)
@@ -84,16 +93,16 @@ function renderSpielbrett() {
                         feld$.appendChild(spielfigur$);
                     }
                 }
-
-                continue;
+                continue;  // Springt zum nächsten Schleifendurchlauf (Spalte)
             }
 
+            // Wenn das Spielfeld auf einem Heimfeld liegt, wird es entsprechend eingefärbt
             const heimFeld = holeHeimFeldIndex(zeile, spalte);
-            //Heimfelder werden gefärbt
             if (heimFeld != null) {
                 const spielerFarbe = gibSpielerFarbe(heimFeld.spielerId);
                 feld$.className += ` basis-${spielerFarbe}`;
 
+                // Platzierung einer Spielfigur auf dem Heimfeld, wenn es leer ist
                 const heimfeldAktuellerSpieler = spielerListe[heimFeld.spielerId];
                 const aktuelleSpielfigur = heimfeldAktuellerSpieler.spielFiguren[heimFeld.heimFeldIndex];
                 if (aktuelleSpielfigur === -1) {
@@ -106,12 +115,13 @@ function renderSpielbrett() {
                 }
             }
 
+            // Wenn das Spielfeld auf einem Zielfeld liegt, wird es entsprechend eingefärbt
             const zielFeld = holeZielFeldIndex(zeile, spalte);
-            //Zielfelder werden gefärbt
             if (zielFeld != null) {
                 const spielerFarbe = gibSpielerFarbe(zielFeld.spielerId);
                 feld$.className += ` basis-${spielerFarbe}`;
 
+                // Platzierung einer Spielfigur auf dem Zielfeld, wenn es nicht leer ist
                 const zielfeldAktuellerSpieler = spielerListe[zielFeld.spielerId];
                 const zielFeldPosition = zielFeld.zielFeldIndex + 40;
                 const figurId = zielfeldAktuellerSpieler.spielFiguren.indexOf(zielFeldPosition);
@@ -130,39 +140,51 @@ function renderSpielbrett() {
 
 // aus einer Koordinate vom Spielbrett wird der Laufbahnindex zurückgegeben 
 function holeLaufbahnIndex(zeile, spalte) {
+    //von 0 bis  4
     if (spalte === 4 && (zeile >= 7 && zeile <= 10)) {
         return 10 - zeile;
     }
+    //von 5 bis 8
     if (zeile === 6 && (spalte >= 0 && spalte <= 4)) {
         return 4 + (4 - spalte);
     }
+    //9
     if (spalte === 0 && zeile === 5) {
         return 9;
     }
+    //10 bis 14
     if (zeile === 4 && (spalte >= 0 && spalte <= 4)) {
         return 10 + spalte;
     }
+    //15 bis 18
     if (spalte === 4 && (zeile >= 0 && zeile <= 4)) {
         return 15 + (3 - zeile);
     }
+    //19
     if (spalte === 5 && zeile === 0) {
         return 19;
     }
+    //20 bis 24
     if (spalte === 6 && (zeile >= 0 && zeile <= 3)) {
         return 20 + zeile;
     }
+    //25 bis 28
     if (zeile === 4 && (spalte >= 6 && spalte <= 10)) {
         return 24 + (spalte - 6);
     }
+    //29
     if (spalte === 10 && zeile === 5) {
         return 29;
     }
+    //30 bis 34
     if (zeile === 6 && (spalte <= 10 && spalte >= 6)) {
         return 30 + (10 - spalte);
     }
+    //35 bis 38
     if (spalte === 6 && (zeile >= 7 && zeile <= 10)) {
         return 35 + (zeile - 7);
     }
+    //39
     if (spalte === 5 && zeile === 10) {
         return 39;
     }
@@ -239,6 +261,7 @@ function holeZielFeldIndex(zeile, spalte) {
     return null;
 }
 
+//gibt die Spielerfarbe zurück anhand von der ID. Wichitg für CSS Klassen zuweisung!
 function gibSpielerFarbe(id) {
     switch (id) {
         case 0:
@@ -276,7 +299,7 @@ async function spielzugAusfuehren() {
                 figurSchlagen(wertAnkunftsFeld);
                 aktiverSpieler.spielFiguren[indexFigurStartfeld] = wertAnkunftsFeld;
             }
-        //Ankunftsfeld nicht besetzt
+            //Ankunftsfeld nicht besetzt
         } else {
             aktiverSpieler.spielFiguren[indexFigurStartfeld] = wertAnkunftsFeld;
         }
@@ -362,7 +385,7 @@ async function spielzugAusfuehren() {
                                     aktiverSpieler.spielFiguren[indexEigeneFigurStartFeld()] = wertAnkunftsFeld;
 
                                 }
-                            } 
+                            }
                             //Ankunftsfeld nicht besetzt
                             else {
                                 aktiverSpieler.spielFiguren[indexEigeneFigurStartFeld()] = wertAnkunftsFeld;
@@ -640,7 +663,7 @@ function pruefungKeinSpielerLaufbahn(spielerFiguren) {
             anzahlFigurLaufbahn++;
         }
     }
-    if(anzahlFigurLaufbahn === 0){
+    if (anzahlFigurLaufbahn === 0) {
         return true;
     }
     return false;
