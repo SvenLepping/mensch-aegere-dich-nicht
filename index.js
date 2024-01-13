@@ -283,7 +283,7 @@ async function spielzugAusfuehren() {
     let darfErneutWuerfeln = false;
     const wurfErgebnis = wuerfeln();
     //Prüfung ob Startfeld mit eigenem Spieler besetzt ist und mindestens ein Spieler im Heimfeld ist
-    if (pruefungSpielFeldBesetzt(aktuellerSpielerID * 10) && pruefungBesetztEigenerSpieler(aktuellerSpielerID * 10) && minEinSpielerHeimfeld() === true) {
+    if (pruefungSpielFeldBesetzt(aktuellerSpielerID * 10) && pruefungBesetztEigenerSpieler(aktuellerSpielerID * 10) && minEinSpielerHeimfeld()) {
         const indexFigurStartfeld = indexEigeneFigurStartFeld();
         const wertAnkunftsFeld = ankunftsSpielFeldBerechnen(aktuellerSpielerID * 10, wurfErgebnis);
         //Prüft ob das Feld wo die Figur vom Startfeld aus hingezogen werden soll besetzt ist
@@ -329,7 +329,6 @@ async function spielzugAusfuehren() {
                 darfErneutWuerfeln = true;
                 const ersterSpielerImHeimfeld = erstenHeimFeldSpielerSuchen(aktiverSpieler.spielFiguren);
                 let startFeldSpieler = aktuellerSpielerID * 10;
-                console.log(`StartFeldSpieler = ${startFeldSpieler}`);
 
                 //Prüfung ob das Startfeld, wo die Figur hingesetzt werden soll, besetzt ist
                 if (pruefungSpielFeldBesetzt(startFeldSpieler)) {
@@ -441,49 +440,29 @@ function spielFigurGedrueckt(spielerID, figurID, position) {
     gedrueckteSpielerID = spielerID;
     gedrueckteFigurID = figurID;
     gedruecktePosition = position;
-
-    console.log("Spielfigur gedrückt", spielerID, figurID, position);
 }
 
 async function spielFigurAuswaehlenUndSetzen(wurfErgebnis) {
     let figurGeaendert = await pruefungAenderungFigurAuswahl();
-    console.log(figurGeaendert);
-    console.log(aktuellerSpielerID);
-    console.log(gedrueckteSpielerID, gedrueckteFigurID, gedruecktePosition);
-    console.log(wurfErgebnis);
     if (figurGeaendert) {
-        console.log(`Funktion pruefeAenderungFigurAuswahl ${gedrueckteSpielerID}    ${aktuellerSpielerID}`);
         //Prüfung ob der Spieler seine eigenen Figur ausgewählt hat
         if (gedrueckteSpielerID === aktuellerSpielerID && gedruecktePosition != -1) {
-            console.log("gedrueckteSpielerID === aktuellerSpielerID");
-            console.log(gedrueckteSpielerID, gedrueckteFigurID, gedruecktePosition);
-            console.log(wurfErgebnis);
             //Funktion Ankunftseld berechnen funktioniert hier nicht, gedruecktePosition wird dann als Nan übergeben?!
             const wertAnkunftsFeld = ankunftsSpielFeldBerechnen(gedruecktePosition, wurfErgebnis);
-            console.log("Ankunftsfeld", wertAnkunftsFeld);
             if (wertAnkunftsFeld <= 43) {
                 if (pruefungSpielFeldBesetzt(wertAnkunftsFeld)) {
                     if (pruefungBesetztEigenerSpieler(wertAnkunftsFeld)) {
                         await spielFigurAuswaehlenUndSetzen(wurfErgebnis);
                         spielFigurAuswahlZuruecksetzen();
-                        console.log("andere Spielfigur auswählen");
+                        window.alert(`Ungültiger Zug, bitte eine andere Figur auswählen!`);
                     } else {
                         figurSchlagen(wertAnkunftsFeld);
-                        console.log("Gedrückte Spieler ID", gedrueckteSpielerID);
-                        console.log("Gedrückte Figur ID", gedrueckteFigurID);
-                        console.log("Aktuelle Spieler ID", aktuellerSpielerID);
                         spielerListe[gedrueckteSpielerID].spielFiguren[gedrueckteFigurID] = wertAnkunftsFeld;
                         spielFigurAuswahlZuruecksetzen();
-                        console.log("ICH SETZE DIE FIGUR, NACHDEM ICH JEMANDEN GESCHLAGEN HABE");
                         renderSpielbrett();
                     }
                 }
                 else {
-                    console.log("Ausgewählte Figur setzen");
-                    console.log("ICH SETZE DIE FIGUR");
-                    console.log("Gedrückte Spieler ID", gedrueckteSpielerID);
-                    console.log("Gedrückte Figur ID", gedrueckteFigurID);
-                    console.log("Aktuelle Spieler ID", aktuellerSpielerID);
                     spielerListe[aktuellerSpielerID].spielFiguren[gedrueckteFigurID] = wertAnkunftsFeld;
                     spielFigurAuswahlZuruecksetzen();
                     renderSpielbrett();
@@ -491,7 +470,6 @@ async function spielFigurAuswaehlenUndSetzen(wurfErgebnis) {
             }
             //Wenn Figur über den Wert 43 gesetzt wird (außerhalb der wählbaren Felder), andere Figur wählen
             else {
-                console.log("Ungültige Figurauswahl");
                 window.alert('Ungeültiger Spielzug. Bitte wähle eine andere Figur!');
                 spielFigurAuswahlZuruecksetzen();
                 await spielFigurAuswaehlenUndSetzen(wurfErgebnis);
@@ -499,7 +477,6 @@ async function spielFigurAuswaehlenUndSetzen(wurfErgebnis) {
         }
         //Spieler hat eine falsche Figur ausgewählt
         else {
-            console.log("Ungültige Figurauswahl");
             window.alert('Ungeültiger Spielzug. Bitte wähle eine andere Figur!');
             spielFigurAuswahlZuruecksetzen();
             await spielFigurAuswaehlenUndSetzen(wurfErgebnis);
@@ -516,7 +493,6 @@ function spielFigurAuswahlZuruecksetzen() {
 //Funktion gibt erst einen Return, wenn eine Figur angeklickt wurde
 async function pruefungAenderungFigurAuswahl() {
     const result = await warteAufAenderung();
-    console.log("FIGUR AUSGEWÄHLT!");
     return result;
 }
 
@@ -526,8 +502,6 @@ function warteAufAenderung() {
         const intervalId = setInterval(() => {
             if (gedruecktePosition !== null) {
                 clearInterval(intervalId);
-                console.log("Änderung erkannt!");
-                console.log(`${gedrueckteSpielerID} ${gedrueckteFigurID} ${gedruecktePosition}`);
                 resolve(true);
             } else {
                 console.log(`${gedrueckteSpielerID} ${gedrueckteFigurID} ${gedruecktePosition}`);
@@ -564,7 +538,6 @@ function figurSchlagen(feldIndex) {
     if (feldIndex <= 39 && feldIndex >= 0) {
         //Wenn Spieler Rot am Zug ist
         if (aktuellerSpielerID === 0) {
-            console.log("SpielerId=0")
             if (spielerListe[1].spielFiguren.indexOf(feldIndex) !== -1) {
                 spielFigurIndex = spielerListe[1].spielFiguren.indexOf(feldIndex);
                 spielerIdGeschlagen = 1;
@@ -580,7 +553,6 @@ function figurSchlagen(feldIndex) {
         }
         //Wenn Spieler Blau am Zug ist
         if (aktuellerSpielerID === 1) {
-            console.log("SpielerId=1")
             if (spielerListe[0].spielFiguren.indexOf(feldIndex) !== -1) {
                 spielFigurIndex = spielerListe[0].spielFiguren.indexOf(feldIndex);
                 spielerIdGeschlagen = 0;
@@ -596,7 +568,6 @@ function figurSchlagen(feldIndex) {
         }
         //Wenn Spieler Gelb am Zug ist
         if (aktuellerSpielerID === 2) {
-            console.log("SpielerId=2")
             if (spielerListe[0].spielFiguren.indexOf(feldIndex) !== -1) {
                 spielFigurIndex = spielerListe[0].spielFiguren.indexOf(feldIndex);
                 spielerIdGeschlagen = 0;
@@ -612,7 +583,6 @@ function figurSchlagen(feldIndex) {
         }
         //Wenn Spieler Grün am Zug ist
         if (aktuellerSpielerID === 3) {
-            console.log("SpielerId=3")
             if (spielerListe[0].spielFiguren.indexOf(feldIndex) !== -1) {
                 spielFigurIndex = spielerListe[0].spielFiguren.indexOf(feldIndex);
                 spielerIdGeschlagen = 0;
@@ -629,8 +599,6 @@ function figurSchlagen(feldIndex) {
         else {
             console.log("Spieler ID nicht gefunden.");
         }
-        console.log("Spielfeld besetzt");
-        console.log(` SpielerIdGeschlagen =${spielerIdGeschlagen} / SpielerFigurIndex = ${spielFigurIndex}`);
         const spielerListeGeschlagen = spielerListe[spielerIdGeschlagen];
         spielerListeGeschlagen.spielFiguren[spielFigurIndex] = -1;
     }
