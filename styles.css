@@ -1,98 +1,123 @@
-body{
+body {
     margin: 50px;
-
+    background-color: #f7f7f7; /* Hintergrundfarbe des gesamten Dokuments */
 }
 
 h1 {
-    font-family: 'Helvetica', sans-serif;
-    font-size: 36px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modernere Schriftart */
+    font-size: 42px;
     font-weight: bold;
-    color: #333;
-    padding: 10px;
+    color: #000000; /* Google Blau für die Überschrift */
+    padding: 20px;
     margin: 0;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
     text-decoration: underline;
     text-align: center;
 }
 
-
 #spielbrett {
-    width: fit-content;
-    border: 3px solid black;
+    margin: 0 auto; /* Zentrieren des Spielfelds */
+    width: 750px;
+    border: 5px double #333; /* Doppelte Rahmenlinie */
+    background-color: #fff; /* Weißer Hintergrund */
+    padding: 20px; /* Zusätzlicher Innenabstand */
+    border-radius: 15px; /* Abgerundete Ecken */
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); /* Leichter Schatten für das Spielbrett */
 }
 
 #wuerfel {
-    /*display: inline-block;*/
-    padding: 10px 20px;
-    font-size: 16px;
+    margin: 0 auto; /* Zentrieren des Spielfelds */
+    width: 800px; /* Gleiche Breite wie das Spielfeld */
+    box-sizing: border-box; /* Hinzufügen von padding und border zur Breite */
+    padding: 15px 30px;
+    font-size: 20px;
     font-weight: bold;
     text-align: center;
     cursor: pointer;
-    background-color: #3498db; /* Hintergrundfarbe */
-    color: #fff; /* Textfarbe */
-    border: 2px solid #2980b9; /* Randfarbe */
-    /*border-radius: 5px; /* Abrundung der Ecken */ 
-    transition: background-color 0.3s, color 0.3s; /* Sanfte Übergänge für Hintergrund- und Textfarbe */
+    background-color: #4caf50;
+    color: #fff;
+    border: 3px solid #388e3c;
+    border-radius: 8px;
+    transition: background-color 0.3s, color 0.3s, transform 0.3s;
 }
 
 #wuerfel:hover {
-    background-color: #000000; /* Hintergrundfarbe bei Hover */
-    color: #ffffff; /* Textfarbe bei Hover */
+    background-color: #388e3c; /* Dunkleres Grün bei Hover */
 }
 
 .zeile {
     display: flex;
+    justify-content: center; /* In der Mitte ausrichten */
+    width: 100%; /* 100% der verfügbaren Breite */
+    max-width: 738.43px; /* Maximale Breite */
+    margin: 0 auto; /* Zentrierung mit Margin */
 }
 
-.feld{
-    height: 55px;
-    width: 55px;
-    border: 1px solid black;
+.feld {
+    height: 65px; /* Größere Felder für bessere Sichtbarkeit */
+    width: 65px;
+    border: 2px solid #555; /* Dunklerer Rand */
+    background-color: #f0f0f0; /* Hellgrauer Hintergrund */
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
 .laufbahn {
-    background-color: bisque;
+    background-color: #ffe0b2; /* Helle Pfadfarbe */
 }
 
-.basis-rot{
-    background-color: #ff000069;
+.basis-Rot{
+    background-color: rgb(255, 103, 103); /* Transparente Hintergrundfarbe */
+    transition: transform 0.3s; /* Füge die Transition-Eigenschaft für Hover-Effekt hinzu */
+}
+.basis-Blau{
+    background-color: rgba(125, 123, 255); /* Transparente Hintergrundfarbe */
+    transition: transform 0.3s; /* Füge die Transition-Eigenschaft für Hover-Effekt hinzu */
+}
+.basis-Gelb{
+    background-color: rgb(249, 251, 118); /* Transparente Hintergrundfarbe */
+    transition: transform 0.3s; /* Füge die Transition-Eigenschaft für Hover-Effekt hinzu */
 }
 
-.basis-blau{
-    background-color: #0022ff69;
+.basis-Grün {
+    background-color: rgba(132, 226, 109); /* Transparente Hintergrundfarbe */
+    transition: transform 0.3s; /* Füge die Transition-Eigenschaft für Hover-Effekt hinzu */
 }
 
-.basis-gelb{
-    background-color: rgba(255, 255, 0, 0.448);
-}
-
-.basis-grün{
-    background-color: rgba(0, 128, 0, 0.466);
+.basis-Rot:hover,
+.basis-Blau:hover,
+.basis-Gelb:hover,
+.basis-Grün:hover {
+    transform: scale(1); /* Verhindere Vergrößerung bei Hover */
 }
 
 /*gilt für alle Spielfiguren */
-.spiel-figur{
-    width: calc(90% - 2px);
-    height: calc(90% - 2px);
+.spiel-figur {
+    width: calc(80% - 2px); /* Kleinere Spielfiguren für mehr Platz */
+    height: calc(80% - 2px);
     border-radius: 50%;
-    border: 1px solid black;
+    border: 2px solid #333;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Schatten für die Spielfiguren */
+    transition: transform 0.3s; /* Füge die Transition-Eigenschaft für Hover-Effekt hinzu */
 }
 
-.spiel-figur-rot {
-    background-color: red;
+.spiel-figur:hover {
+    transform: scale(1.1); /* Vergrößere die Spielfigur leicht bei Hover */
 }
 
-.spiel-figur-blau {
-    background-color: blue;
+.spiel-figur-Rot {
+    background-color: #ff0000; /* Rotes Spielfiguren */
 }
 
-.spiel-figur-gelb {
-    background-color: yellow;
+.spiel-figur-Blau {
+    background-color: #0000ff; /* Blaues Spielfiguren */
 }
 
-.spiel-figur-grün {
-    background-color: green;
+.spiel-figur-Gelb {
+    background-color: yellow; /* Gelbe Spielfiguren */
+}
+
+.spiel-figur-Grün {
+    background-color: green; /* Grüne Spielfiguren */
 }
