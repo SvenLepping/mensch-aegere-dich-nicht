@@ -27,18 +27,18 @@ const spielerListe = [{
 const laufbahn = new Array(FeldGroesse * 4, null);
 
 function renderWuerfel() {
-    //Würfel wird zum Spielbrett hinzugefügt und css id wird gesetzt 
+    //Würfel wird zum Spielbrett hinzugefügt und CSS-ID wird gesetzt 
     const wuerfel$ = document.querySelector('#wuerfel');
 
     wuerfel$.textContent = 'Jetzt würfeln';
 
-    //Würfel bekommt klick Funktion
+    //Würfel erhält Klick-Funktion
     wuerfel$.addEventListener('click', spielzugAusfuehren);
 }
 
 //Funktion um Spielfeld zu zeichnen
 function renderSpielbrett() {
-    // Sucht im HTML die das Spielbrett Element anhand der ID
+    // Spielfeld-Element im HTML wird anhand der ID gesucht
     const spielbrett$ = document.querySelector('#spielbrett');
     spielbrett$.innerHTML = "";
 
@@ -126,7 +126,6 @@ function renderSpielbrett() {
             }
         }
     }
-    console.log(spielerListe[0]);
 }
 
 // aus einer Koordinate vom Spielbrett wird der Laufbahnindex zurückgegeben 
@@ -292,7 +291,7 @@ async function spielzugAusfuehren() {
         if (pruefungKeinSpielerLaufbahn(aktiverSpieler.spielFiguren)) {
             //Spieler hat keine 6 gewürfelt
             if (wurfErgebnis < 6) {
-                window.alert(`Bitte Würfeln Sie erneut, Sie haben schon ${wurfAnzahl}/3 Versuchen benötigt.`);
+                window.alert(`Bitte Würfeln Sie erneut. Sie haben schon ${wurfAnzahl}/3 Versuchen benötigt, um eine 6 zu würfeln.`);
                 //Wenn noch nicht drei mal gewürfelt wurde, darf der Spieler weiter würfeln
                 if (wurfAnzahl < 3) {
                     darfErneutWuerfeln = true;
