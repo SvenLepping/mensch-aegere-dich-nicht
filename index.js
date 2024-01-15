@@ -7,10 +7,11 @@ let gedruecktePosition = null;
 
 //SpielerListe erstellen mit 4 Spielern
 const spielerListe = [{
-    id: 0,
     //Laufbahnindex der Spielfigur
     //-1 = auf Heimfeld
     //40-43 Zielfeld
+    //Spieler Rot
+    id: 0,
     spielFiguren: [-1, -1, -1, -1],
 }, {
     //Spieler Blau
